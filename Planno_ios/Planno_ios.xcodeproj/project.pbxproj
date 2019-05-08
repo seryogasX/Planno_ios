@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63345CA227AD0EC007CEF66 /* DataBase.swift */; };
+		A6C413032282B829007AFF95 /* DesksListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413022282B829007AFF95 /* DesksListViewController.swift */; };
+		A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413042282B863007AFF95 /* SignUpViewController.swift */; };
+		A6C413092282B969007AFF95 /* funcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413082282B969007AFF95 /* funcs.swift */; };
 		A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC92F227A0505005C641F /* AppDelegate.swift */; };
 		A6CEC932227A0505005C641F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC931227A0505005C641F /* ViewController.swift */; };
 		A6CEC935227A0505005C641F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC933227A0505005C641F /* Main.storyboard */; };
@@ -17,6 +20,9 @@
 
 /* Begin PBXFileReference section */
 		A63345CA227AD0EC007CEF66 /* DataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
+		A6C413022282B829007AFF95 /* DesksListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesksListViewController.swift; sourceTree = "<group>"; };
+		A6C413042282B863007AFF95 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		A6C413082282B969007AFF95 /* funcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = funcs.swift; sourceTree = "<group>"; };
 		A6CEC92C227A0505005C641F /* Planno_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planno_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6CEC92F227A0505005C641F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6CEC931227A0505005C641F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -37,6 +43,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A6C413062282B8DF007AFF95 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				A6C413042282B863007AFF95 /* SignUpViewController.swift */,
+				A6CEC931227A0505005C641F /* ViewController.swift */,
+				A6C413022282B829007AFF95 /* DesksListViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		A6C413072282B934007AFF95 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				A63345CA227AD0EC007CEF66 /* DataBase.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
 		A6CEC923227A0505005C641F = {
 			isa = PBXGroup;
 			children = (
@@ -56,13 +80,14 @@
 		A6CEC92E227A0505005C641F /* Planno_ios */ = {
 			isa = PBXGroup;
 			children = (
+				A6C413072282B934007AFF95 /* Database */,
+				A6C413062282B8DF007AFF95 /* ViewControllers */,
 				A6CEC92F227A0505005C641F /* AppDelegate.swift */,
-				A6CEC931227A0505005C641F /* ViewController.swift */,
+				A6C413082282B969007AFF95 /* funcs.swift */,
 				A6CEC933227A0505005C641F /* Main.storyboard */,
 				A6CEC936227A0506005C641F /* Assets.xcassets */,
 				A6CEC938227A0506005C641F /* LaunchScreen.storyboard */,
 				A6CEC93B227A0506005C641F /* Info.plist */,
-				A63345CA227AD0EC007CEF66 /* DataBase.swift */,
 			);
 			path = Planno_ios;
 			sourceTree = "<group>";
@@ -139,8 +164,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				A6CEC932227A0505005C641F /* ViewController.swift in Sources */,
+				A6C413092282B969007AFF95 /* funcs.swift in Sources */,
+				A6C413032282B829007AFF95 /* DesksListViewController.swift in Sources */,
 				A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */,
 				A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */,
+				A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
