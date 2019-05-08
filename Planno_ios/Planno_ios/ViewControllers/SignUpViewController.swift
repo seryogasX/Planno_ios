@@ -19,18 +19,25 @@ class SignUpViewController : UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     
     let db = Database.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     @IBAction func signUpButtonClicked(_ sender: Any) {
-        
         if usernameTextField.text?.isEmpty ?? true {
             showError(controller: self, message: "Введите имя")
+            return
         }
         if passwordTextField.text?.isEmpty ?? true {
             showError(controller: self, message: "Введите пароль!")
+            return
         }
+        if emailTextField.text?.isEmpty ?? true {
+            showError(controller: self, message: "Введите email!")
+            return
+        }
+        
         let username = usernameTextField.text!
         let name = nameTextField.text!
         let surname = surnameTextField.text!
@@ -43,6 +50,11 @@ class SignUpViewController : UIViewController {
             return
         }
         
+        if db.findUser(username, password) {
+            print("OK!")
+        }
+        else {
+            print("NE OK!")
+        }
     }
-    
 }

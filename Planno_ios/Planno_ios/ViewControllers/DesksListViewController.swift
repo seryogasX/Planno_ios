@@ -9,9 +9,14 @@
 import Foundation
 import UIKit
 
-class DesksListViewController : UIViewController {
+class DesksListViewController : UITabBarController {
+    
+    var username : String = ""
+    let db = Database.shared
     
     override func viewDidLoad() {
-        super.viewDidLoad();
+        super.viewDidLoad()
+        var deskList = db.getDesksList(username : username)
     }
+    
 }

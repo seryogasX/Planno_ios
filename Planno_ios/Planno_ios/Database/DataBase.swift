@@ -27,10 +27,13 @@ class Database {
         if sqlite3_open(dbUrl.path, &db) != SQLITE_OK {
             print("Error opening database")
         }
+        if initTables() {
+            print("OK!")
+        }
     }
     
-    func createTableQuery() -> Bool {
-        let createTableQuery = "CREATE TABLE IF NOT EXISTS"
+    private func initTables() -> Bool {
+        let createTableQuery = "CREATE TABLE IF NOT EXISTS USERS (ID, NAME, ))"
         if sqlite3_exec(db, createTableQuery, nil, nil, nil) != SQLITE_OK {
             print("Error creating table")
             return false
@@ -38,13 +41,15 @@ class Database {
         return true
     }
     
-    func findUser(_ username : String, _ password : String?) -> Bool {
-        var finduserQuery = "SELECT * from Users where username=\(username)"
-        if (password! as String?) != nil {
-            finduserQuery += " and password=\(password)"
-        }
-        
-        
+    public func findUser(_ username : String, _ password : String) -> Bool {
+        var findUserQuery = "SELECT * from Users where username=\(username) and password=\(password)"
         return true
+    }
+    
+    public func getDesksList(username : String) -> [Desk] {
+        var list : [Desk] = []
+        let getDesksQuery = "SELECT * FROM Desks where owner=\(username)"
+        
+        return list
     }
 }
