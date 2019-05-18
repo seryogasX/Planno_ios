@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-class DesksListViewController : UITabBarController {
+class MenuViewController : UITabBarController {
     
     var username : String = ""
     let db = Database.shared

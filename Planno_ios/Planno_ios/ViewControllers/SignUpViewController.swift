@@ -26,7 +26,7 @@ class SignUpViewController : UIViewController {
     
     @IBAction func signUpButtonClicked(_ sender: Any) {
         if usernameTextField.text?.isEmpty ?? true {
-            showError(controller: self, message: "Введите имя")
+            showError(controller: self, message: "Введите имя пользователя!")
             return
         }
         if passwordTextField.text?.isEmpty ?? true {
@@ -40,7 +40,6 @@ class SignUpViewController : UIViewController {
         
         let username = usernameTextField.text!
         let name = nameTextField.text!
-        let surname = surnameTextField.text!
         let password = passwordTextField.text!
         let repeat_password = repeatPasswordTextField.text!
         let email = emailTextField.text!
@@ -50,11 +49,13 @@ class SignUpViewController : UIViewController {
             return
         }
         
-        if db.findUser(username, password) {
-            print("OK!")
+        if db.findUser(username, nil) {
+            showError(controller: self, message: "Пользователь с таким именем уже существует!")
         }
         else {
-            print("NE OK!")
+            if db.addNewUser(username, name, password, email) {
+                
+            }
         }
     }
 }

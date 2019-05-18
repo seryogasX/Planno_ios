@@ -41,8 +41,16 @@ class Database {
         return true
     }
     
-    public func findUser(_ username : String, _ password : String) -> Bool {
-        var findUserQuery = "SELECT * from Users where username=\(username) and password=\(password)"
+    public func findUser(_ username : String, _ password : String?) -> Bool {
+        var findUserQuery = "SELECT * from Users where username=\(username)"
+        if let pass = password {
+            findUserQuery += "and password=\(pass)"
+        }
+        return true
+    }
+    
+    public func addNewUser(_ username : String, _ name : String, _ password : String, _ email : String) -> Bool {
+        
         return true
     }
     
