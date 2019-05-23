@@ -1,5 +1,5 @@
 //
-//  DesksViewController.swift
+//  LaunchViewController.swift
 //  Planno_ios
 //
 //  Created by Сергей Петров on 23/05/2019.
@@ -9,12 +9,11 @@
 import Foundation
 import UIKit
 
-
-class DesksViewController : UIViewController {
+class LaunchViewController : UIViewController {
     
-    var email : String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
     }
 }

@@ -11,40 +11,37 @@ import UIKit
 class ViewController: UIViewController {
 
     let db = Database.shared
-    @IBOutlet weak var usernameTextField : UITextField!
+    @IBOutlet weak var emailTextField : UITextField!
     @IBOutlet weak var passwordTextField : UITextField!
-    var username : String = ""
-    var password : String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
     @IBAction func loginButtonClicked(_ sender: Any) {
-        if usernameTextField.text!.isEmpty {
-            showError(controller: self, message: "Введите имя пользователя!")
-            return
-        }
-        if passwordTextField.text!.isEmpty {
-            showError(controller: self, message: "Введите пароль!")
-            return
-        }
-        username = usernameTextField.text!
-        password = passwordTextField.text!
-        if db.findUser(username, password) {
-            self.performSegue(withIdentifier: "MainVCtoMenuVC", sender: self)
-        }
-        else {
-            showError(controller : self, message: "Неправильный логин или пароль!");
+        if checkInputData() {
+            if db.findUser(emailTextField.text!, passwordTextField.text!) {
+                self.performSegue(withIdentifier: "LogInToDesks", sender: self)
+            }
+            else {
+                showError(controller : self, message: "Неправильный логин или пароль!");
+            }
         }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "MainVCtoMenuVC" {
-            let tabVCs = segue.destination as! UITabBarController
-            let nav = tabVCs.viewControllers![0] as! UINavigationController
-            let desksVC = nav.topViewController as! DesksViewController
-            desksVC.username = username
+        if segue.identifier == "LogInToDesks" {
+            if let desksVC = segue.destination as? DesksViewController {
+                desksVC.email = emailTextField.text!
+            }
         }
+    }
+    
+    func checkInputData() -> Bool {
+        if emailTextField.text!.isEmpty || passwordTextField.text!.isEmpty {
+            showError(controller: self, message: "Введите имя пользователя!")
+            return false
+        }
+        return true
     }
 }
