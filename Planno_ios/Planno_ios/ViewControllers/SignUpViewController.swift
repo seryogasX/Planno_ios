@@ -29,8 +29,6 @@ class SignUpViewController : UIViewController {
     @IBAction func signUpButtonClicked(_ sender: Any) {
         if checkInputData() {
             if db.addNewUser(email: emailTextField.text!, name : nameTextField.text!, surname: surnameTextField.text!, password: passwordTextField.text!, year: yearTextField.text!) {
-                
-                
             }
         }
     }
@@ -64,7 +62,10 @@ class SignUpViewController : UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "SignUpToDesks" {
             if let desksVC = segue.destination as? DesksViewController {
-                desksVC.email = emailTextField.text!
+                let profileID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
+                if profileID != -1 {
+                    desksVC.profileID = profileID
+                }
             }
         }
     }

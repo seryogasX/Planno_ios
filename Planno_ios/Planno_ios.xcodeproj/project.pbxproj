@@ -12,12 +12,14 @@
 		A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D82297138300AEE5B3 /* LaunchViewController.swift */; };
 		A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413042282B863007AFF95 /* SignUpViewController.swift */; };
 		A6C413092282B969007AFF95 /* funcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413082282B969007AFF95 /* funcs.swift */; };
-		A6C4130B2282E3DC007AFF95 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C4130A2282E3DC007AFF95 /* User.swift */; };
+		A6C4130B2282E3DC007AFF95 /* data.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C4130A2282E3DC007AFF95 /* data.swift */; };
 		A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC92F227A0505005C641F /* AppDelegate.swift */; };
 		A6CEC932227A0505005C641F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC931227A0505005C641F /* ViewController.swift */; };
 		A6CEC935227A0505005C641F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC933227A0505005C641F /* Main.storyboard */; };
 		A6CEC937227A0506005C641F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC936227A0506005C641F /* Assets.xcassets */; };
 		A6CEC93A227A0506005C641F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC938227A0506005C641F /* LaunchScreen.storyboard */; };
+		A6EEE3462298440200B3CB38 /* CardsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EEE3452298440200B3CB38 /* CardsViewController.swift */; };
+		A6EEE3482298446300B3CB38 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EEE3472298446300B3CB38 /* SearchViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +28,7 @@
 		A665A0D82297138300AEE5B3 /* LaunchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 		A6C413042282B863007AFF95 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		A6C413082282B969007AFF95 /* funcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = funcs.swift; sourceTree = "<group>"; };
-		A6C4130A2282E3DC007AFF95 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		A6C4130A2282E3DC007AFF95 /* data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = data.swift; sourceTree = "<group>"; };
 		A6CEC92C227A0505005C641F /* Planno_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planno_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6CEC92F227A0505005C641F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6CEC931227A0505005C641F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -34,6 +36,8 @@
 		A6CEC936227A0506005C641F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6CEC939227A0506005C641F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A6CEC93B227A0506005C641F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A6EEE3452298440200B3CB38 /* CardsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardsViewController.swift; sourceTree = "<group>"; };
+		A6EEE3472298446300B3CB38 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +58,8 @@
 				A6CEC931227A0505005C641F /* ViewController.swift */,
 				A665A0D62297133E00AEE5B3 /* DesksViewController.swift */,
 				A665A0D82297138300AEE5B3 /* LaunchViewController.swift */,
+				A6EEE3452298440200B3CB38 /* CardsViewController.swift */,
+				A6EEE3472298446300B3CB38 /* SearchViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -62,7 +68,6 @@
 			isa = PBXGroup;
 			children = (
 				A63345CA227AD0EC007CEF66 /* DataBase.swift */,
-				A6C4130A2282E3DC007AFF95 /* User.swift */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -89,6 +94,7 @@
 				A6C413072282B934007AFF95 /* Database */,
 				A6C413062282B8DF007AFF95 /* ViewControllers */,
 				A6CEC92F227A0505005C641F /* AppDelegate.swift */,
+				A6C4130A2282E3DC007AFF95 /* data.swift */,
 				A6C413082282B969007AFF95 /* funcs.swift */,
 				A6CEC933227A0505005C641F /* Main.storyboard */,
 				A6CEC936227A0506005C641F /* Assets.xcassets */,
@@ -169,12 +175,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A6EEE3482298446300B3CB38 /* SearchViewController.swift in Sources */,
 				A6CEC932227A0505005C641F /* ViewController.swift in Sources */,
 				A6C413092282B969007AFF95 /* funcs.swift in Sources */,
+				A6EEE3462298440200B3CB38 /* CardsViewController.swift in Sources */,
 				A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */,
 				A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */,
 				A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */,
-				A6C4130B2282E3DC007AFF95 /* User.swift in Sources */,
+				A6C4130B2282E3DC007AFF95 /* data.swift in Sources */,
 				A665A0D72297133E00AEE5B3 /* DesksViewController.swift in Sources */,
 				A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */,
 			);

@@ -12,9 +12,14 @@ import UIKit
 
 class DesksViewController : UIViewController {
     
-    var email : String?
+    var profileID : Int32 = -1
+    var db = Database.shared
+    var desksList : [Desk]?
+    @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        desksList = db.getDesksList(profileID: profileID)
+        
     }
 }

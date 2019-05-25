@@ -1,18 +1,17 @@
 //
-//  LaunchViewController.swift
+//  SearchViewController.swift
 //  Planno_ios
 //
-//  Created by Сергей Петров on 23/05/2019.
+//  Created by Сергей Петров on 24/05/2019.
 //  Copyright © 2019 SergioPetrovx. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-class LaunchViewController : UIViewController {
+class SearchViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
 }

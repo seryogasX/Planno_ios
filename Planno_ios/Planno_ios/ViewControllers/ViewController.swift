@@ -32,7 +32,10 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "LogInToDesks" {
             if let desksVC = segue.destination as? DesksViewController {
-                desksVC.email = emailTextField.text!
+                let profileID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
+                if profileID != -1 {
+                    desksVC.profileID = profileID
+                }
             }
         }
     }
