@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LogInViewController: UIViewController {
 
     let db = Database.shared
     @IBOutlet weak var emailTextField : UITextField!
@@ -30,19 +30,25 @@ class ViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "LogInToDesks" {
-            if let desksVC = segue.destination as? DesksViewController {
-                let profileID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
-                if profileID != -1 {
-                    desksVC.profileID = profileID
+        if segue.identifier == "LogInToDesks" && checkInputData() {
+            if db.findUser(emailTextField.text!, passwordTextField.text!) {
+                if let desksVC = segue.destination as? DesksViewController {
+                    let profileID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
+                    if profileID != -1 {
+                        desksVC.profileID = profileID
+                    }
                 }
             }
+            else {
+                showError(controller : self, message: "Неправильный логин или пароль!");
+            }
+            
         }
     }
     
     func checkInputData() -> Bool {
         if emailTextField.text!.isEmpty || passwordTextField.text!.isEmpty {
-            showError(controller: self, message: "Введите имя пользователя!")
+            showError(controller: self, message: "Введите имя пользователя и пароль!")
             return false
         }
         return true

@@ -7,14 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A629D79E2299A365000E169B /* NewDeskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629D79D2299A365000E169B /* NewDeskViewController.swift */; };
+		A629D7A02299A421000E169B /* UserDataUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629D79F2299A421000E169B /* UserDataUpdate.swift */; };
+		A629D7A22299B523000E169B /* SHA-3.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629D7A12299B523000E169B /* SHA-3.swift */; };
 		A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63345CA227AD0EC007CEF66 /* DataBase.swift */; };
 		A665A0D72297133E00AEE5B3 /* DesksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D62297133E00AEE5B3 /* DesksViewController.swift */; };
 		A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D82297138300AEE5B3 /* LaunchViewController.swift */; };
 		A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413042282B863007AFF95 /* SignUpViewController.swift */; };
 		A6C413092282B969007AFF95 /* funcs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413082282B969007AFF95 /* funcs.swift */; };
-		A6C4130B2282E3DC007AFF95 /* data.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C4130A2282E3DC007AFF95 /* data.swift */; };
+		A6C4130B2282E3DC007AFF95 /* structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C4130A2282E3DC007AFF95 /* structs.swift */; };
 		A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC92F227A0505005C641F /* AppDelegate.swift */; };
-		A6CEC932227A0505005C641F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC931227A0505005C641F /* ViewController.swift */; };
+		A6CEC932227A0505005C641F /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6CEC931227A0505005C641F /* LogInViewController.swift */; };
 		A6CEC935227A0505005C641F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC933227A0505005C641F /* Main.storyboard */; };
 		A6CEC937227A0506005C641F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC936227A0506005C641F /* Assets.xcassets */; };
 		A6CEC93A227A0506005C641F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6CEC938227A0506005C641F /* LaunchScreen.storyboard */; };
@@ -23,15 +26,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A629D79D2299A365000E169B /* NewDeskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDeskViewController.swift; sourceTree = "<group>"; };
+		A629D79F2299A421000E169B /* UserDataUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataUpdate.swift; sourceTree = "<group>"; };
+		A629D7A12299B523000E169B /* SHA-3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SHA-3.swift"; sourceTree = "<group>"; };
 		A63345CA227AD0EC007CEF66 /* DataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
 		A665A0D62297133E00AEE5B3 /* DesksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesksViewController.swift; sourceTree = "<group>"; };
 		A665A0D82297138300AEE5B3 /* LaunchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 		A6C413042282B863007AFF95 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		A6C413082282B969007AFF95 /* funcs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = funcs.swift; sourceTree = "<group>"; };
-		A6C4130A2282E3DC007AFF95 /* data.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = data.swift; sourceTree = "<group>"; };
+		A6C4130A2282E3DC007AFF95 /* structs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = structs.swift; sourceTree = "<group>"; };
 		A6CEC92C227A0505005C641F /* Planno_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Planno_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6CEC92F227A0505005C641F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A6CEC931227A0505005C641F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A6CEC931227A0505005C641F /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		A6CEC934227A0505005C641F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A6CEC936227A0506005C641F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A6CEC939227A0506005C641F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -51,15 +57,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A629D79C22996417000E169B /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				A6C4130A2282E3DC007AFF95 /* structs.swift */,
+				A6C413082282B969007AFF95 /* funcs.swift */,
+				A629D7A12299B523000E169B /* SHA-3.swift */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
 		A6C413062282B8DF007AFF95 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
 				A6C413042282B863007AFF95 /* SignUpViewController.swift */,
-				A6CEC931227A0505005C641F /* ViewController.swift */,
+				A6CEC931227A0505005C641F /* LogInViewController.swift */,
 				A665A0D62297133E00AEE5B3 /* DesksViewController.swift */,
 				A665A0D82297138300AEE5B3 /* LaunchViewController.swift */,
 				A6EEE3452298440200B3CB38 /* CardsViewController.swift */,
 				A6EEE3472298446300B3CB38 /* SearchViewController.swift */,
+				A629D79D2299A365000E169B /* NewDeskViewController.swift */,
+				A629D79F2299A421000E169B /* UserDataUpdate.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -91,11 +109,10 @@
 		A6CEC92E227A0505005C641F /* Planno_ios */ = {
 			isa = PBXGroup;
 			children = (
+				A629D79C22996417000E169B /* resources */,
 				A6C413072282B934007AFF95 /* Database */,
 				A6C413062282B8DF007AFF95 /* ViewControllers */,
 				A6CEC92F227A0505005C641F /* AppDelegate.swift */,
-				A6C4130A2282E3DC007AFF95 /* data.swift */,
-				A6C413082282B969007AFF95 /* funcs.swift */,
 				A6CEC933227A0505005C641F /* Main.storyboard */,
 				A6CEC936227A0506005C641F /* Assets.xcassets */,
 				A6CEC938227A0506005C641F /* LaunchScreen.storyboard */,
@@ -176,15 +193,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				A6EEE3482298446300B3CB38 /* SearchViewController.swift in Sources */,
-				A6CEC932227A0505005C641F /* ViewController.swift in Sources */,
+				A6CEC932227A0505005C641F /* LogInViewController.swift in Sources */,
 				A6C413092282B969007AFF95 /* funcs.swift in Sources */,
 				A6EEE3462298440200B3CB38 /* CardsViewController.swift in Sources */,
 				A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */,
 				A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */,
 				A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */,
-				A6C4130B2282E3DC007AFF95 /* data.swift in Sources */,
+				A6C4130B2282E3DC007AFF95 /* structs.swift in Sources */,
+				A629D7A22299B523000E169B /* SHA-3.swift in Sources */,
 				A665A0D72297133E00AEE5B3 /* DesksViewController.swift in Sources */,
+				A629D79E2299A365000E169B /* NewDeskViewController.swift in Sources */,
 				A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */,
+				A629D7A02299A421000E169B /* UserDataUpdate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

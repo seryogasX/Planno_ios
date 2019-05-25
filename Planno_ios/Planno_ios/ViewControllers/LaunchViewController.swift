@@ -13,6 +13,14 @@ class LaunchViewController : UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
+    
+    @IBAction func SignInButtonClicked(_ sender: Any) {
+        self.performSegue(withIdentifier: "LaunchToLogin", sender: self)
+    }
+    
+//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        
+//    }
+    
 }

@@ -34,9 +34,17 @@ class Database {
     }
     
     private func initTables() -> Bool {
-        let createTableQuery = "CREATE TABLE IF NOT EXISTS USERS (ID, NAME, ))"
-        if sqlite3_exec(db, createTableQuery, nil, nil, nil) != SQLITE_OK {
-            print("Error creating table")
+        let createQuery = """
+            CREATE TABLE IF NOT EXISTS ProfileAuthor (ProfileEmail varchar(50) primary key, ProfilePassword varchar(32), ProfileID integer);
+            CREATE TABLE IF NOT EXISTS ProfileInformation (ProfileID integer primary key, ProfileName varchar(50), ProfileSecondName varchar(50), ProfileYear varchar(10));
+            CREATE TABLE IF NOT EXISTS Desks (DeskID integer primary key, DeskName varchar(50), DeskText varchar(255), ProfileID integer);
+            CREATE TABLE IF NOT EXISTS Cards (CardID integer primary key, DeskID integer, CardName varchar(50), CardDescription varchar(255), CardCreationDate varchar(10), CardDeadlineDate varchar(10), CardStatus integer);
+            CREATE TABLE IF NOT EXISTS AccessTable (ProfileID integer, DeskID integer, IsOwner integer);
+            CREATE TABLE IF NOT EXISTS Marks (CardID integer, MarkID integer);
+            CREATE TABLE IF NOT EXISTS MarkList (MarkID integer primary key, MarkDescription varchar(255));
+            """
+        if sqlite3_exec(db, createQuery, nil, nil, nil) != SQLITE_OK {
+            print("Error creating Tables!")
             return false
         }
         sqlite3_finalize(statement)
@@ -44,28 +52,52 @@ class Database {
     }
     
     public func findUser(_ email : String, _ password : String?) -> Bool {
-        var findUserQuery = "SELECT * from Users where username=\(email)"
+        var findUserQuery = "SELECT * from ProfileAuthor where ProfileEmail=?"
         if let pass = password {
-            findUserQuery += "and password=\(pass)"
+            findUserQuery += " and ProfilePassword=?"
+        }
+        if sqlite3_prepare_v2(db, findUserQuery, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_text(statement, 1, email, -1, nil)
+            sqlite3_bind_text(statement, 2, password, -1, nil)
+            if sqlite3_step(statement) == SQLITE_DONE {
+                print("Successfully find user.")
+            } else {
+                print("Could not find user.")
+            }
+        }
+        else {
+            print("Ошибка базы данных! Не удалось найти пользователя с таким логином и паролем!")
+            return false
         }
         sqlite3_finalize(statement)
         return true
     }
     
-    public func addNewUser(email: String, name: String, surname: String,  password: String, year: String) -> Bool {
-        var addNewUserQuery = "INSERT INTO ProfileInformation(ProfileName, ProfileSecondName, ProfileYear) VALUES (\(name), \(surname), \(year))"
-        if sqlite3_exec(db, addNewUserQuery, nil, nil, nil) != SQLITE_OK {
-            print("Ошибка базы данных! Невозможно добавить нового пользователя!")
-            return false
-        }
+    public func addNewUser(_ user: User) -> Bool {
         let newProfileIDQuery = "SELECT MAX(ProfileID) FROM ProfileInformation"
         if sqlite3_prepare_v2(db, newProfileIDQuery, -1, &statement, nil) != SQLITE_OK {
             print("Ошибка базы данных! Невозможно получить максимальный ID!")
             return false
         }
-        let id = sqlite3_column_int(statement, 0)
+        user.id = sqlite3_column_int(statement, 0) + 1
+        var addNewUserQuery = "INSERT INTO ProfileInformation(ProfileID, ProfileName, ProfileSecondName, ProfileYear) VALUES (?, ?, ?, ?);"
+        if sqlite3_prepare_v2(db, addNewUserQuery, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_int(statement, 1, user.id)
+            sqlite3_bind_text(statement, 2, user.name, -1, nil)
+            sqlite3_bind_text(statement, 3, user.surname, -1, nil)
+            sqlite3_bind_text(statement, 4, user.birthDate, -1, nil)
+            if sqlite3_step(statement) == SQLITE_DONE {
+                print("Successfully inserted row.")
+            } else {
+                print("Could not insert row.")
+            }
+        }
+        else {
+            print("Ошибка базы данных! Невозможно добавить нового пользователя!")
+            return false
+        }
         
-        addNewUserQuery = "INSERT INTO ProfileAuthor(ProfileEmail, ProfilePassword, ProfileID) VALUES(\(email), \(password), \(id))"
+        addNewUserQuery = "INSERT INTO ProfileAuthor(ProfileEmail, ProfilePassword, ProfileID) VALUES(\(user.email), \(user.password), \(user.id))"
         if sqlite3_exec(db, addNewUserQuery, nil, nil, nil) != SQLITE_OK {
             print("Ошибка базы данных! Невозможно добавить нового пользователя в таблицу аутентификации!")
             return false
@@ -119,14 +151,19 @@ class Database {
     }
     
     public func getUserID(email: String, password: String) -> Int32 {
-        let getUserIDQuery = "SELECT ProfileID FROM ProfileAuthor WHERE ProfileEmail=\(email) AND ProfilePassword=\(password)"
+        let getUserIDQuery = "SELECT * FROM ProfileAuthor WHERE ProfileEmail=\(email) AND ProfilePassword=\(password)"
         if sqlite3_prepare_v2(db, getUserIDQuery, -1, &statement, nil) != SQLITE_OK {
             print("Ошибка базы данных! Ошибка при получении ID пользователя!")
             return -1
         }
         let id = sqlite3_column_int(statement, 0)
-        sqlite3_finalize(statement)
-        return id
+        if id != 0 {
+            sqlite3_finalize(statement)
+            return id
+        }
+        else {
+            return -1
+        }
     }
     
     public func getCardsList(deskid: Int) -> [Card] {

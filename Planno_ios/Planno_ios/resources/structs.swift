@@ -8,14 +8,25 @@
 
 import Foundation
 
-struct User {
-    let id : Int32
-    let username : String
-    let password : String
+class User {
+    var id : Int32
+    let name : String
+    let surname : String
+    let birthDate : String
     let email : String
+    let password : String
+    
+    init(_ id_: Int32, _ name_: String, _ surname_: String, _ email_: String, _ password_: String, _ birthDate_: String) {
+        id = id_
+        name = name_
+        surname = surname_
+        birthDate = birthDate_
+        email = email_
+        password = password_
+    }
 }
 
-struct Desk {
+class Desk {
     let id : Int32
     let name : String
     let text : String?
@@ -29,7 +40,7 @@ struct Desk {
     }
 }
 
-struct Mark {
+class Mark {
     let id : Int32
     let description: String
     
@@ -39,7 +50,7 @@ struct Mark {
     }
 }
 
-struct Card {
+class Card {
     let id : Int32
     let name : String
     let description : String

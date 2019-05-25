@@ -26,13 +26,6 @@ class SignUpViewController : UIViewController {
         super.viewDidLoad()
     }
     
-    @IBAction func signUpButtonClicked(_ sender: Any) {
-        if checkInputData() {
-            if db.addNewUser(email: emailTextField.text!, name : nameTextField.text!, surname: surnameTextField.text!, password: passwordTextField.text!, year: yearTextField.text!) {
-            }
-        }
-    }
-    
     func checkInputData() -> Bool {
         if emailTextField.text!.isEmpty || nameTextField.text!.isEmpty || surnameTextField.text!.isEmpty || dayTextField.text!.isEmpty || monthTextField.text!.isEmpty || yearTextField.text!.isEmpty || passwordTextField.text!.isEmpty || repeatPasswordTextField.text!.isEmpty {
             
@@ -60,13 +53,21 @@ class SignUpViewController : UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "SignUpToDesks" {
-            if let desksVC = segue.destination as? DesksViewController {
-                let profileID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
-                if profileID != -1 {
-                    desksVC.profileID = profileID
+        if checkInputData() {
+            let userID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
+            if userID != -1 {
+                showError(controller: self, message: "Пользователь с такой почтой уже есть!")
+                return
+            }
+            let user = User(userID, nameTextField.text!, surnameTextField.text!, emailTextField.text!, passwordTextField.text!, dayTextField.text! + "." + monthTextField.text! + "." + yearTextField.text!)
+            if db.addNewUser(user) {
+                if segue.identifier == "SignUpToDesks" {
+                    if let desksVC = segue.destination as? DesksViewController {
+                        desksVC.profileID = user.id
+                    }
                 }
             }
         }
+        
     }
 }
