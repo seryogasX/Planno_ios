@@ -279,7 +279,7 @@ class Database {
         return list
     }
     
-    public func getCardsList(deskid: Int) -> [Card] {
+    public func getCardsList(deskid: Int32) -> [Card] {
         var list: [Card] = []
         guard deskid > 0 else {
             return list
@@ -568,7 +568,7 @@ class Database {
         return true
     }
     
-    public func updateUser(_ user: User) -> Bool {
+    public func updateUser(email: String?, name: String?, surname: String?, password: String?) -> Bool {
         return true
     }
     

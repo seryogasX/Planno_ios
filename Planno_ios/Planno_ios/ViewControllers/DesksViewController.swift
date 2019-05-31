@@ -15,7 +15,7 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
     var profileID : Int32 = -1
     var db = Database.shared
     var desksList : [Desk] = []
-    var selectedIndex = -1
+    //var selectedIndex = -1
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
@@ -28,18 +28,18 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CardIdentifier", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "DeskIdentifier", for: indexPath)
         cell.textLabel?.text = desksList[indexPath.row].name
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
+        //selectedIndex = indexPath.row
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        selectedIndex = -1
+        //selectedIndex = -1
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -55,7 +55,8 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
         }
         else if segue.identifier == "DesksToCards" {
             if let cardsVC = segue.destination as? CardsViewController{
-                cardsVC.deskID = desksList[selectedIndex].id
+                let selectedIndex = self.tableView.indexPath(for: sender as! UITableViewCell)?.row
+                cardsVC.deskID = desksList[selectedIndex!].id
             }
         }
     }

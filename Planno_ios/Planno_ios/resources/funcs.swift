@@ -20,3 +20,13 @@ func showError(controller : UIViewController, message : String) {
         handler: nil))
     controller.present(alertController, animated: true, completion: nil)
 }
+
+func showMessage(controller: UIViewController, message : String) {
+    let messageController = UIAlertController (
+        title: "Успешно!", message: message, preferredStyle: UIAlertController.Style.alert)
+    messageController.addAction(UIAlertAction (
+        title: "OK",
+        style: UIAlertAction.Style.default,
+        handler: nil))
+    controller.present(messageController, animated: true, completion: nil)
+}

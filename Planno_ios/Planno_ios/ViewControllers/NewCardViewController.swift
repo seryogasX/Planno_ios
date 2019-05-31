@@ -11,6 +11,8 @@ import UIKit
 
 class NewCardViewController: UIViewController {
     
+    var deskID: Int32 = -1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }

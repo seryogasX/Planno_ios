@@ -11,6 +11,8 @@ import UIKit
 
 class CardSettingsViewController: UIViewController {
     
+    var cardID: Int32 = -1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }

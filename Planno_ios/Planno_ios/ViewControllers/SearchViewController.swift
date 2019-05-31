@@ -28,12 +28,8 @@ class SearchViewController : UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
     
-    @IBAction func returnButtonClicked(_ sender: Any) {
-        self.performSegue(withIdentifier: "SearchToDesks", sender: self)
-    }
-    
     @IBAction func findButtonClicked(_ sender: Any) {
-        //cardList = db.find
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

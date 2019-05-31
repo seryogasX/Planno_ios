@@ -11,12 +11,11 @@ import UIKit
 
 class LaunchViewController : UIViewController {
     
+    @IBOutlet weak var logoView: UIImageView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
-    @IBAction func SignInButtonClicked(_ sender: Any) {
-        self.performSegue(withIdentifier: "LaunchToLogin", sender: self)
-    }
+
     
 }
