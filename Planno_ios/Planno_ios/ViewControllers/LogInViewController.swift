@@ -13,14 +13,19 @@ class LogInViewController: UIViewController {
     let db = Database.shared
     @IBOutlet weak var emailTextField : UITextField!
     @IBOutlet weak var passwordTextField : UITextField!
+    var password : String = ""
+    var profileID: Int32 = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
 
     @IBAction func loginButtonClicked(_ sender: Any) {
+        //password = "\(SHA3.shared.getHash(passwordTextField.text!))"
+        password = passwordTextField.text!
         if checkInputData() {
-            if db.findUser(emailTextField.text!, passwordTextField.text!) {
+            profileID = db.findUser(email: emailTextField.text!, password: password)
+            if profileID != -1 {
                 self.performSegue(withIdentifier: "LogInToDesks", sender: self)
             }
             else {
@@ -31,13 +36,8 @@ class LogInViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "LogInToDesks" && checkInputData() {
-            if db.findUser(emailTextField.text!, passwordTextField.text!) {
-                if let desksVC = segue.destination as? DesksViewController {
-                    let profileID = db.getUserID(email: emailTextField.text!, password: passwordTextField.text!)
-                    if profileID != -1 {
-                        desksVC.profileID = profileID
-                    }
-                }
+            if let desksVC = segue.destination as? DesksViewController {
+                desksVC.profileID = profileID
             }
             else {
                 showError(controller : self, message: "Неправильный логин или пароль!");

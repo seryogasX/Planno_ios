@@ -35,80 +35,148 @@ class Database {
     
     private func initTables() -> Bool {
         let createQuery = """
-            CREATE TABLE IF NOT EXISTS ProfileAuthor (ProfileEmail varchar(50) primary key, ProfilePassword varchar(32), ProfileID integer);
             CREATE TABLE IF NOT EXISTS ProfileInformation (ProfileID integer primary key, ProfileName varchar(50), ProfileSecondName varchar(50), ProfileYear varchar(10));
-            CREATE TABLE IF NOT EXISTS Desks (DeskID integer primary key, DeskName varchar(50), DeskText varchar(255), ProfileID integer);
-            CREATE TABLE IF NOT EXISTS Cards (CardID integer primary key, DeskID integer, CardName varchar(50), CardDescription varchar(255), CardCreationDate varchar(10), CardDeadlineDate varchar(10), CardStatus integer);
-            CREATE TABLE IF NOT EXISTS AccessTable (ProfileID integer, DeskID integer, IsOwner integer);
-            CREATE TABLE IF NOT EXISTS Marks (CardID integer, MarkID integer);
+            CREATE TABLE IF NOT EXISTS ProfileAuthor (ProfileEmail varchar(50), ProfilePassword varchar(32), ProfileID integer, foreign key (ProfileID) references ProfileInformation(ProfileID));
+            CREATE TABLE IF NOT EXISTS Desks (DeskID integer primary key, DeskName varchar(50), DeskText varchar(255), ProfileID integer, foreign key(ProfileID), references ProfileInformation(ProfileID));
+            CREATE TABLE IF NOT EXISTS AccessTable (ProfileID integer, DeskID integer, IsOwner integer, foreign key (ProfileID) references ProfileInformation(ProfileID), foreign key(DeskID) references Desks(DeskID));
             CREATE TABLE IF NOT EXISTS MarkList (MarkID integer primary key, MarkDescription varchar(255));
+            CREATE TABLE IF NOT EXISTS Cards (CardID integer primary key, DeskID integer, CardName varchar(50), CardDescription varchar(255), CardCreationDate varchar(10), CardDeadLineDate varchar(10), CardStatus integer, foreign key(DeskID) references Desks(DeskID));
+            CREATE TABLE IF NOT EXISTS Marks (CardID integer, MarkID integer, foreign key(CardID) references Cards(CardID), foreign key(MarkID) references MarkList(MarkID));
             """
+//        let createQuery = """
+//            DROP TABLE IF EXISTS Marks;
+//            DROP TABLE IF EXISTS Cards;
+//            DROP TABLE IF EXISTS MarkList;
+//            DROP TABLE IF EXISTS AccessTable;
+//            DROP TABLE IF EXISTS Desks;
+//            DROP TABLE IF EXISTS ProfileAuthor;
+//            DROP TABLE IF EXISTS ProfileInformation;
+//            """
+
         if sqlite3_exec(db, createQuery, nil, nil, nil) != SQLITE_OK {
             print("Error creating Tables!")
             return false
         }
         sqlite3_finalize(statement)
+        print("OK!!!")
         return true
     }
     
-    public func findUser(_ email : String, _ password : String?) -> Bool {
+    public func findUser(email : String, password: String?) -> Int32 {
         var findUserQuery = "SELECT * from ProfileAuthor where ProfileEmail=?"
-        if let pass = password {
+        if let _ = password {
             findUserQuery += " and ProfilePassword=?"
         }
+        var profileID: Int32 = -1
         if sqlite3_prepare_v2(db, findUserQuery, -1, &statement, nil) == SQLITE_OK {
             sqlite3_bind_text(statement, 1, email, -1, nil)
-            sqlite3_bind_text(statement, 2, password, -1, nil)
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successfully find user.")
-            } else {
-                print("Could not find user.")
+            if let _ = password {
+                sqlite3_bind_text(statement, 2, password, -1, nil)
+            }
+            if sqlite3_step(statement) == SQLITE_ROW {
+                profileID = sqlite3_column_int(statement, 2)
+                print("Найшли пользователя! ID=\(profileID)")
+            }
+            else {
+                print("Пользователь не найден!")
             }
         }
         else {
-            print("Ошибка базы данных! Не удалось найти пользователя с таким логином и паролем!")
-            return false
+            print("Ошибка базы данных!")
         }
         sqlite3_finalize(statement)
-        return true
+        return profileID
     }
     
     public func addNewUser(_ user: User) -> Bool {
-        let newProfileIDQuery = "SELECT MAX(ProfileID) FROM ProfileInformation"
-        if sqlite3_prepare_v2(db, newProfileIDQuery, -1, &statement, nil) != SQLITE_OK {
-            print("Ошибка базы данных! Невозможно получить максимальный ID!")
-            return false
-        }
-        user.id = sqlite3_column_int(statement, 0) + 1
-        var addNewUserQuery = "INSERT INTO ProfileInformation(ProfileID, ProfileName, ProfileSecondName, ProfileYear) VALUES (?, ?, ?, ?);"
-        if sqlite3_prepare_v2(db, addNewUserQuery, -1, &statement, nil) == SQLITE_OK {
-            sqlite3_bind_int(statement, 1, user.id)
-            sqlite3_bind_text(statement, 2, user.name, -1, nil)
-            sqlite3_bind_text(statement, 3, user.surname, -1, nil)
-            sqlite3_bind_text(statement, 4, user.birthDate, -1, nil)
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successfully inserted row.")
-            } else {
-                print("Could not insert row.")
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) == SQLITE_OK {
+            let newProfileIDQuery = "SELECT MAX(ProfileID) FROM ProfileInformation"
+            if sqlite3_prepare_v2(db, newProfileIDQuery, -1, &statement, nil) != SQLITE_OK {
+                print("Ошибка базы данных! Невозможно получить максимальный ID!")
+                completeTransaction = false
+                
             }
+            user.id = sqlite3_column_int(statement, 0) + 1
+            var addNewUserQuery = "INSERT INTO ProfileInformation(ProfileID, ProfileName, ProfileSecondName, ProfileYear) VALUES (?, ?, ?, ?);"
+            if sqlite3_prepare_v2(db, addNewUserQuery, -1, &statement, nil) == SQLITE_OK {
+                sqlite3_bind_int(statement, 1, user.id)
+                sqlite3_bind_text(statement, 2, user.name, -1, nil)
+                sqlite3_bind_text(statement, 3, user.surname, -1, nil)
+                sqlite3_bind_text(statement, 4, user.birthDate, -1, nil)
+                
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Добавили нового пользователя в ProfileInformation!")
+                } else {
+                    print("Не удалось добавить нового пользователя в ProfileInformation!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка базы данных! Невозможно добавить нового пользователя в ProfileInformation!")
+                completeTransaction = false
+            }
+            
+            addNewUserQuery = "INSERT INTO ProfileAuthor(ProfileEmail, ProfilePassword, ProfileID) VALUES(?, ?, ?)"
+            if sqlite3_prepare_v2(db, addNewUserQuery, -1, &statement, nil) == SQLITE_OK {
+                sqlite3_bind_text(statement, 1, user.email, -1, nil)
+                sqlite3_bind_text(statement, 2, user.password, -1, nil)
+                sqlite3_bind_int(statement, 3, user.id)
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Добавили нового пользователя в ProfileAuthor!")
+                } else {
+                    print("Не удалось добавить нового пользователя в ProfileAuthor!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка базы данных! Невозможно добавить нового пользователя в ProfileAuthor!")
+                completeTransaction = false
+            }
+            
+            if completeTransaction {
+                if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                    print("Транзация завершилась успешно! Пользователь добавлен!")
+                }
+                else {
+                    print("Транзация не завершилась успешно! Пользователь не добавлен!")
+                    completeTransaction = false
+                }
+            }
+            else if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Откат транзации завершен!")
+            }
+            else {
+                print("Ошибка отката транзации!")
+            }
+            sqlite3_finalize(statement)
+            return completeTransaction
         }
         else {
-            print("Ошибка базы данных! Невозможно добавить нового пользователя!")
+            print("Что-то пошло не так!")
             return false
         }
-        
-        addNewUserQuery = "INSERT INTO ProfileAuthor(ProfileEmail, ProfilePassword, ProfileID) VALUES(\(user.email), \(user.password), \(user.id))"
-        if sqlite3_exec(db, addNewUserQuery, nil, nil, nil) != SQLITE_OK {
-            print("Ошибка базы данных! Невозможно добавить нового пользователя в таблицу аутентификации!")
-            return false
-        }
-        sqlite3_finalize(statement)
-        return true
     }
     
     public func addNewDesk(_ desk: Desk) -> Bool {
-        let addNewDeskQuery = "INSERT INTO Desks(DeskID, DeskName, DeskText, ProfileID) VALUES(\(desk.id), \(desk.name), \(desk.text ?? ""), \(desk.profileID))"
-        if sqlite3_exec(db, addNewDeskQuery, nil, nil, nil) != SQLITE_OK {
+        let newDeskIDQuery = "SELECT MAX(DeskID) FROM Desks"
+        if sqlite3_prepare_v2(db, newDeskIDQuery, -1, &statement, nil) != SQLITE_OK {
+            print("Ошибка базы данных! Невозможно получить максимальный ID!")
+            return false
+        }
+        desk.id = sqlite3_column_int(statement, 0) + 1
+        let addNewDeskQuery = "INSERT INTO Desks(DeskID, DeskName, DeskText, ProfileID) VALUES(?, ?, ?, ?)"
+        if sqlite3_prepare_v2(db, addNewDeskQuery, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_int(statement, 1, desk.id)
+            sqlite3_bind_text(statement, 2, desk.name, -1, nil)
+            sqlite3_bind_text(statement, 3, desk.text, -1, nil)
+            sqlite3_bind_int(statement, 4, desk.profileID)
+            
+            if sqlite3_step(statement) == SQLITE_DONE {
+                print("Доска добавлена! ID=\(desk.id)")
+            }
+        }
+        else {
             print("Ошибка при добавлении доски!")
             return false
         }
@@ -117,7 +185,6 @@ class Database {
     }
     
     public func getDesksList(profileID : Int32) -> [Desk] {
-        
         var list : [Desk] = []
         var deskIDList : [Int32] = []
         guard profileID > 0 else {
@@ -150,22 +217,6 @@ class Database {
         return list
     }
     
-    public func getUserID(email: String, password: String) -> Int32 {
-        let getUserIDQuery = "SELECT * FROM ProfileAuthor WHERE ProfileEmail=\(email) AND ProfilePassword=\(password)"
-        if sqlite3_prepare_v2(db, getUserIDQuery, -1, &statement, nil) != SQLITE_OK {
-            print("Ошибка базы данных! Ошибка при получении ID пользователя!")
-            return -1
-        }
-        let id = sqlite3_column_int(statement, 0)
-        if id != 0 {
-            sqlite3_finalize(statement)
-            return id
-        }
-        else {
-            return -1
-        }
-    }
-    
     public func getCardsList(deskid: Int) -> [Card] {
         var list: [Card] = []
         guard deskid > 0 else {
@@ -185,7 +236,7 @@ class Database {
             let cardStatus = sqlite3_column_int(statement, 5)
             list.append(Card(id, String(cString: name!), String(cString: description!),
                              String(cString: creationDate!), String(cString: deadlineDate!),
-                             cardStatus == 1 ? true : false))
+                             cardStatus))
         }
         sqlite3_finalize(statement)
         return list
@@ -208,7 +259,6 @@ class Database {
     public func getAllMarksList() -> [Mark] {
         var list : [Mark] = []
         if sqlite3_prepare_v2(db, "SELECT * FROM MarkList", -1, &statement, nil) != SQLITE_OK {
-            
             print("Ошибка базы данных! Не удалось получить список всех меток!")
             return []
         }
@@ -220,155 +270,230 @@ class Database {
     }
     
     public func deleteDesk(_ deskID: Int32) -> Bool {
-        var deleteDeskQuery = "DELETE FROM Desks WHERE DeskID=\(deskID)"
-        if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successful delete!")
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) == SQLITE_OK {
+            var deleteDeskQuery = "DELETE FROM Desks WHERE DeskID=\(deskID)"
+            if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) == SQLITE_OK {
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Доска удалена из Desks!")
+                }
+                else {
+                    print("Ошибка при удалении доски из Desks!")
+                    completeTransaction = false
+                }
             }
             else {
-                print("Ошибка при удалении доски!")
-                return false
+                print("Ошибка базы данных! Не удалось удалить доску из Desks!")
+                completeTransaction = false
+            }
+            
+            deleteDeskQuery = "DELETE FROM Cards WHERE DeskID=\(deskID)"
+            if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Доска удалена из Cards!")
+                }
+                else {
+                    print("Ошибка при удалении доски из Cards!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка базы данных! Не удалось удалить доску из Cards!")
+                completeTransaction = false
+            }
+            
+            deleteDeskQuery = "DELETE FROM AccessTable WHERE DeskID=\(deskID)"
+            if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Доска удалена из AccessTable!")
+                }
+                else {
+                    print("Ошибка при удалении доски из AccessTable!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка базы данных! Не удалось удалить доску из AccessTable!")
+                completeTransaction = false
+            }
+            
+            if completeTransaction {
+                if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                    print("Доска удалена!")
+                }
+                else {
+                    print("Доска не удалена! Ошибка в COMMIT!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                    print("Доска не удалена! Откат транзакции!")
+                }
+                else {
+                    print("Доска не удалена! Ошибка в ROLLBACK!")
+                    completeTransaction = false
+                }
             }
         }
         else {
-            print("Ошибка базы данных! Не удалось удалить доску!")
-            return false
+            print("Ошибка базы данных! Не удалось начать транзакцию")
+            completeTransaction = false
         }
         
-        deleteDeskQuery = "DELETE FROM Cards WHERE DeskID=\(deskID)"
-        if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successful delete!")
-            }
-            else {
-                print("Ошибка при удалении доски!")
-                return false
-            }
-        }
-        else {
-            print("Ошибка базы данных! Не удалось удалить доску!")
-            return false
-        }
-        
-        deleteDeskQuery = "DELETE FROM AccessTable WHERE DeskID=\(deskID)"
-        if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successful delete!")
-            }
-            else {
-                print("Ошибка при удалении доски!")
-                return false
-            }
-        }
-        else {
-            print("Ошибка базы данных! Не удалось удалить доску!")
-            return false
-        }
-        return true
+        return completeTransaction
     }
     
     public func deleteCard(_ cardID: Int32) -> Bool {
-        var deleteDeskQuery = "DELETE FROM Cards WHERE CardID=\(cardID)"
-        if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) == SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successful delete!")
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) == SQLITE_OK {
+            var deleteDeskQuery = "DELETE FROM Cards WHERE CardID=\(cardID)"
+            if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) == SQLITE_OK {
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Карта удалена из Cards!")
+                }
+                else {
+                    print("Ошибка при удалении карты из Cards!")
+                    completeTransaction = false
+                }
             }
             else {
-                print("Ошибка при удалении карты!")
-                return false
+                print("Ошибка базы данных! Не удалось удалить карту!")
+                completeTransaction = false
+            }
+            
+            deleteDeskQuery = "DELETE FROM Marks WHERE CardID=\(cardID)"
+            if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Карта удалена из Marks!")
+                }
+                else {
+                    print("Ошибка при удалении карты из Marks!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка базы данных! Не удалось удалить карту!")
+                completeTransaction = false
+            }
+            
+            if completeTransaction {
+                if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                    print("Карта удалена!")
+                }
+                else {
+                    print("Карта не удалена! Ошибка в COMMIT!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                    print("Карта не удалена! Откат транзакции!")
+                }
+                else {
+                    print("Карта не удалена! Ошибка в ROLLBACK!")
+                    completeTransaction = false
+                }
             }
         }
         else {
-            print("Ошибка базы данных! Не удалось удалить карту!")
-            return false
+            print("Ошибка базы данных! Не удалось начать транзакцию!")
+            completeTransaction = false
         }
         
-        deleteDeskQuery = "DELETE FROM Marks WHERE CardID=\(cardID)"
-        if sqlite3_prepare_v2(db, deleteDeskQuery, -1, &statement, nil) != SQLITE_OK {
+        return completeTransaction
+    }
+    
+    public func updateDesk(deskID: Int32, name: String?, description: String?) -> Bool {
+        var updateDeskQuery = "UPDATE Desks SET"
+        if let _ = name, let _ = description{
+            updateDeskQuery += " DeskName=?, DeskText=? "
+        }
+        else if let _ = name {
+            updateDeskQuery += " DeskName=? "
+        }
+        else if let _ = description {
+            updateDeskQuery += " DeskText=? "
+        }
+        else {
+            return false
+        }
+        updateDeskQuery += "WHERE DeskID=?"
+        
+        if sqlite3_prepare_v2(db, updateDeskQuery, -1, &statement, nil) == SQLITE_OK {
+            if let _ = name, let _ = description{
+                sqlite3_bind_text(statement, 1, name, -1, nil)
+                sqlite3_bind_text(statement, 2, description, -1, nil)
+                sqlite3_bind_int(statement, 3, deskID)
+            }
+            else if let _ = name {
+                sqlite3_bind_text(statement, 1, name, -1, nil)
+                sqlite3_bind_int(statement, 2, deskID)
+            }
+            else if let _ = description {
+                sqlite3_bind_text(statement, 1, description, -1, nil)
+                sqlite3_bind_int(statement, 2, deskID)
+            }
+            
             if sqlite3_step(statement) == SQLITE_DONE {
-                print("Successful delete!")
+                print("Доска обновлена!")
             }
             else {
-                print("Ошибка при удалении карты!")
+                print("Ошибка обновления доски!")
                 return false
             }
         }
         else {
-            print("Ошибка базы данных! Не удалось удалить карту!")
+            print("Ошибка обновления доски!")
             return false
         }
         return true
     }
     
-    public func updateDeskName(_ deskID: Int32, _ newName: String) -> Bool {
-        let updatDeskNameQuery = "UPDATE Desks SET DeskName=\(newName) WHERE DeskID=\(deskID)"
-        if sqlite3_prepare_v2(db, updatDeskNameQuery, -1, &statement, nil) == SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Succesful update!")
-            }
-            else {
-                print("Ошибка при обновлении имени доски!")
-                return false
-            }
-        }
-        else {
-            print("Ошибка базы данных! Не удалось обновить имя доски!")
-            return false
-        }
-        return true
-    }
     
-    public func updateCardName(_ cardID: Int32, _ newName: String) -> Bool {
-        let updatDeskNameQuery = "UPDATE Cards SET CardName=\(newName) WHERE CardID=\(cardID)"
-        if sqlite3_prepare_v2(db, updatDeskNameQuery, -1, &statement, nil) == SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Succesful update!")
-            }
-            else {
-                print("Ошибка при обновлении имени карты!")
-                return false
-            }
-        }
-        else {
-            print("Ошибка базы данных! Не удалось обновить имя карты!")
-            return false
-        }
-        return true
-    }
-    
-    public func updateDeskDescription(_ deskID: Int32, _ newDesc: String) -> Bool {
-        let updatDeskDescQuery = "UPDATE Desks SET DeskText=\(newDesc) WHERE DeskID=\(deskID)"
-        if sqlite3_prepare_v2(db, updatDeskDescQuery, -1, &statement, nil) == SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Succesful update!")
-            }
-            else {
-                print("Ошибка при обновлении описания доски!")
-                return false
-            }
-        }
-        else {
-            print("Ошибка базы данных! Не удалось обновить описание доски!")
-            return false
-        }
-        return true
-    }
-    
-    public func updateCardDescription(_ cardID: Int32, _ newDesc: String) -> Bool {
-        let updatCardDescQuery = "UPDATE Cards SET CardDescription=\(newDesc) WHERE CardID=\(cardID)"
-        if sqlite3_prepare_v2(db, updatCardDescQuery, -1, &statement, nil) == SQLITE_OK {
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Succesful update!")
-            }
-            else {
-                print("Ошибка при обновлении описания карты!")
-                return false
-            }
-        }
-        else {
-            print("Ошибка базы данных! Не удалось обновить описание карты!")
-            return false
-        }
+    public func updateCard(cardID: Int32, name: String?, description: String?, deadLineDate: String?, cardStatus: Int32?) -> Bool {
+//        var updateCardQuery = "UPDATE Cards SET"
+//        if let _ = name, let _ = description, let _ = deadLineDate, let _ = cardStatus{
+//            updateCardQuery += " CardName=?, CardDescription=?, CardDeadLineDate=?, cardStatus=? "
+//        }
+//        else if let _ = name {
+//            updateCardQuery += " CardName=? "
+//        }
+//        else if let _ = description {
+//            updateCardQuery += " DeskName=? "
+//        }
+//        else {
+//            return false
+//        }
+//        updateCardQuery += "WHERE CardID=?"
+//
+//        if sqlite3_prepare_v2(db, updateCardQuery, -1, &statement, nil) == SQLITE_OK {
+//            if let _ = name, let _ = description{
+//                sqlite3_bind_text(statement, 1, name, -1, nil)
+//                sqlite3_bind_text(statement, 2, description, -1, nil)
+//                sqlite3_bind_int(statement, 3, deskID)
+//            }
+//            else if let _ = name {
+//                sqlite3_bind_text(statement, 1, description, -1, nil)
+//                sqlite3_bind_int(statement, 2, deskID)
+//            }
+//            else if let _ = description {
+//                sqlite3_bind_text(statement, 1, name, -1, nil)
+//                sqlite3_bind_int(statement, 2, deskID)
+//            }
+//
+//            if sqlite3_step(statement) == SQLITE_DONE {
+//                print("Доска обновлена!")
+//            }
+//            else {
+//                print("Ошибка обновления доски!")
+//                return false
+//            }
+//        }
+//        else {
+//            print("Ошибка обновления доски!")
+//            return false
+//        }
         return true
     }
     
@@ -378,6 +503,14 @@ class Database {
             print("Ошибка базы данных! Невозможно добавить нового пользователя к доске!")
             return false
         }
+        return true
+    }
+    
+    public func updateUser(_ user: User) -> Bool {
+        return true
+    }
+    
+    public func deleteUser(ID: Int32) -> Bool {
         return true
     }
 }

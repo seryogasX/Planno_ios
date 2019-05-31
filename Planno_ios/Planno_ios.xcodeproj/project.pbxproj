@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		A629D79E2299A365000E169B /* NewDeskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629D79D2299A365000E169B /* NewDeskViewController.swift */; };
-		A629D7A02299A421000E169B /* UserDataUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629D79F2299A421000E169B /* UserDataUpdate.swift */; };
 		A629D7A22299B523000E169B /* SHA-3.swift in Sources */ = {isa = PBXBuildFile; fileRef = A629D7A12299B523000E169B /* SHA-3.swift */; };
 		A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A63345CA227AD0EC007CEF66 /* DataBase.swift */; };
+		A6483EA622A15EE000C5B697 /* DeskSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EA522A15EE000C5B697 /* DeskSettingsViewController.swift */; };
+		A6483EA822A15F6200C5B697 /* NewCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EA722A15F6200C5B697 /* NewCardViewController.swift */; };
+		A6483EAA22A15FD400C5B697 /* CardSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EA922A15FD400C5B697 /* CardSettingsViewController.swift */; };
 		A665A0D72297133E00AEE5B3 /* DesksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D62297133E00AEE5B3 /* DesksViewController.swift */; };
 		A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D82297138300AEE5B3 /* LaunchViewController.swift */; };
 		A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413042282B863007AFF95 /* SignUpViewController.swift */; };
@@ -27,9 +29,11 @@
 
 /* Begin PBXFileReference section */
 		A629D79D2299A365000E169B /* NewDeskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDeskViewController.swift; sourceTree = "<group>"; };
-		A629D79F2299A421000E169B /* UserDataUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataUpdate.swift; sourceTree = "<group>"; };
 		A629D7A12299B523000E169B /* SHA-3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SHA-3.swift"; sourceTree = "<group>"; };
 		A63345CA227AD0EC007CEF66 /* DataBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataBase.swift; sourceTree = "<group>"; };
+		A6483EA522A15EE000C5B697 /* DeskSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskSettingsViewController.swift; sourceTree = "<group>"; };
+		A6483EA722A15F6200C5B697 /* NewCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCardViewController.swift; sourceTree = "<group>"; };
+		A6483EA922A15FD400C5B697 /* CardSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSettingsViewController.swift; sourceTree = "<group>"; };
 		A665A0D62297133E00AEE5B3 /* DesksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesksViewController.swift; sourceTree = "<group>"; };
 		A665A0D82297138300AEE5B3 /* LaunchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 		A6C413042282B863007AFF95 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
@@ -77,7 +81,9 @@
 				A6EEE3452298440200B3CB38 /* CardsViewController.swift */,
 				A6EEE3472298446300B3CB38 /* SearchViewController.swift */,
 				A629D79D2299A365000E169B /* NewDeskViewController.swift */,
-				A629D79F2299A421000E169B /* UserDataUpdate.swift */,
+				A6483EA522A15EE000C5B697 /* DeskSettingsViewController.swift */,
+				A6483EA722A15F6200C5B697 /* NewCardViewController.swift */,
+				A6483EA922A15FD400C5B697 /* CardSettingsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -195,16 +201,18 @@
 				A6EEE3482298446300B3CB38 /* SearchViewController.swift in Sources */,
 				A6CEC932227A0505005C641F /* LogInViewController.swift in Sources */,
 				A6C413092282B969007AFF95 /* funcs.swift in Sources */,
+				A6483EA622A15EE000C5B697 /* DeskSettingsViewController.swift in Sources */,
 				A6EEE3462298440200B3CB38 /* CardsViewController.swift in Sources */,
 				A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */,
 				A6CEC930227A0505005C641F /* AppDelegate.swift in Sources */,
 				A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */,
 				A6C4130B2282E3DC007AFF95 /* structs.swift in Sources */,
+				A6483EA822A15F6200C5B697 /* NewCardViewController.swift in Sources */,
 				A629D7A22299B523000E169B /* SHA-3.swift in Sources */,
+				A6483EAA22A15FD400C5B697 /* CardSettingsViewController.swift in Sources */,
 				A665A0D72297133E00AEE5B3 /* DesksViewController.swift in Sources */,
 				A629D79E2299A365000E169B /* NewDeskViewController.swift in Sources */,
 				A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */,
-				A629D7A02299A421000E169B /* UserDataUpdate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

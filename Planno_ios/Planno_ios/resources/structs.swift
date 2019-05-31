@@ -27,7 +27,7 @@ class User {
 }
 
 class Desk {
-    let id : Int32
+    var id : Int32
     let name : String
     let text : String?
     let profileID : Int32
@@ -56,10 +56,10 @@ class Card {
     let description : String
     let creationDate : String
     let deadLineDate : String?
-    let cardStatus : Bool
+    let cardStatus : Int32
     var marksList: [Mark]
     
-    init (_ id_: Int32, _ name_: String, _ description_: String, _ creationDate_: String, _ deadlineDate_: String?, _ cardStatus_: Bool) {
+    init (_ id_: Int32, _ name_: String, _ description_: String, _ creationDate_: String, _ deadlineDate_: String?, _ cardStatus_: Int32) {
         id = id_
         name = name_
         description = description_

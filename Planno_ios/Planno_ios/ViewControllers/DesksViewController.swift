@@ -30,7 +30,6 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CardIdentifier", for: indexPath)
         cell.textLabel?.text = desksList[indexPath.row].name
-        //cell.backgroundColor = UIColor.
         return cell
     }
     
@@ -47,6 +46,19 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
         if segue.identifier == "DesksToCards" {
             if let cardsVC = segue.destination as? CardsViewController {
                 cardsVC.deskID = desksList[selectedIndex].id
+            }
+        }
+        else if segue.identifier == "DesksToSignUpForUpdate" {
+            if let updateDataVC = segue.destination as? SignUpViewController {
+                updateDataVC.status = "UPDATE"
+            }
+        } else if segue.identifier == "DeskToNewDesk" {
+            if let createNewDeskVC = segue.destination as? NewDeskViewController {
+                createNewDeskVC.profileID = profileID
+            }
+        } else if segue.identifier == "DesksToSearch" {
+            if let searchVC = segue.destination as? SearchViewController {
+                searchVC.profileID = profileID
             }
         }
     }
