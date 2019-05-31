@@ -13,6 +13,8 @@
 		A6483EA622A15EE000C5B697 /* DeskSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EA522A15EE000C5B697 /* DeskSettingsViewController.swift */; };
 		A6483EA822A15F6200C5B697 /* NewCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EA722A15F6200C5B697 /* NewCardViewController.swift */; };
 		A6483EAA22A15FD400C5B697 /* CardSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EA922A15FD400C5B697 /* CardSettingsViewController.swift */; };
+		A6483EAC22A16D6000C5B697 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EAB22A16D6000C5B697 /* AccountSettingsViewController.swift */; };
+		A6483EAE22A16FFA00C5B697 /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6483EAD22A16FFA00C5B697 /* NavigationViewController.swift */; };
 		A665A0D72297133E00AEE5B3 /* DesksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D62297133E00AEE5B3 /* DesksViewController.swift */; };
 		A665A0D92297138300AEE5B3 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A665A0D82297138300AEE5B3 /* LaunchViewController.swift */; };
 		A6C413052282B863007AFF95 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6C413042282B863007AFF95 /* SignUpViewController.swift */; };
@@ -34,6 +36,8 @@
 		A6483EA522A15EE000C5B697 /* DeskSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeskSettingsViewController.swift; sourceTree = "<group>"; };
 		A6483EA722A15F6200C5B697 /* NewCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCardViewController.swift; sourceTree = "<group>"; };
 		A6483EA922A15FD400C5B697 /* CardSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSettingsViewController.swift; sourceTree = "<group>"; };
+		A6483EAB22A16D6000C5B697 /* AccountSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountSettingsViewController.swift; sourceTree = "<group>"; };
+		A6483EAD22A16FFA00C5B697 /* NavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
 		A665A0D62297133E00AEE5B3 /* DesksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesksViewController.swift; sourceTree = "<group>"; };
 		A665A0D82297138300AEE5B3 /* LaunchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchViewController.swift; sourceTree = "<group>"; };
 		A6C413042282B863007AFF95 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
@@ -84,6 +88,8 @@
 				A6483EA522A15EE000C5B697 /* DeskSettingsViewController.swift */,
 				A6483EA722A15F6200C5B697 /* NewCardViewController.swift */,
 				A6483EA922A15FD400C5B697 /* CardSettingsViewController.swift */,
+				A6483EAB22A16D6000C5B697 /* AccountSettingsViewController.swift */,
+				A6483EAD22A16FFA00C5B697 /* NavigationViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -201,6 +207,8 @@
 				A6EEE3482298446300B3CB38 /* SearchViewController.swift in Sources */,
 				A6CEC932227A0505005C641F /* LogInViewController.swift in Sources */,
 				A6C413092282B969007AFF95 /* funcs.swift in Sources */,
+				A6483EAE22A16FFA00C5B697 /* NavigationViewController.swift in Sources */,
+				A6483EAC22A16D6000C5B697 /* AccountSettingsViewController.swift in Sources */,
 				A6483EA622A15EE000C5B697 /* DeskSettingsViewController.swift in Sources */,
 				A6EEE3462298440200B3CB38 /* CardsViewController.swift in Sources */,
 				A63345CB227AD0EC007CEF66 /* DataBase.swift in Sources */,

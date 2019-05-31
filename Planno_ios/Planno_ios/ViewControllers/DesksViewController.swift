@@ -43,22 +43,19 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "DesksToCards" {
-            if let cardsVC = segue.destination as? CardsViewController {
-                cardsVC.deskID = desksList[selectedIndex].id
+        if segue.identifier == "DesksToAccountSettings" {
+            if let accountSettingsVC = segue.destination as? AccountSettingsViewController {
+                accountSettingsVC.profileID = profileID
             }
         }
-        else if segue.identifier == "DesksToSignUpForUpdate" {
-            if let updateDataVC = segue.destination as? SignUpViewController {
-                updateDataVC.status = "UPDATE"
+        else if segue.identifier == "DesksToNewDesk" {
+            if let newDeskVC = segue.destination as? NewDeskViewController {
+                newDeskVC.profileID = profileID
             }
-        } else if segue.identifier == "DeskToNewDesk" {
-            if let createNewDeskVC = segue.destination as? NewDeskViewController {
-                createNewDeskVC.profileID = profileID
-            }
-        } else if segue.identifier == "DesksToSearch" {
-            if let searchVC = segue.destination as? SearchViewController {
-                searchVC.profileID = profileID
+        }
+        else if segue.identifier == "DesksToCards" {
+            if let cardsVC = segue.destination as? CardsViewController{
+                cardsVC.deskID = desksList[selectedIndex].id
             }
         }
     }

@@ -21,28 +21,21 @@ class NewDeskViewController : UIViewController {
         super.viewDidLoad()
     }
     
-    @IBAction func cancelButtonClicked(_ sender: Any) {
-        self.performSegue(withIdentifier: "NewDeskToDesks", sender: self)
-    }
-    
-    @IBAction func createDeskButtonClicked(_ sender: Any) {
-        if titleTextEdit.text!.isEmpty {
-            showError(controller: self, message: "Введите заголовок доски!")
-            return
-        }
-        if db.addNewDesk(Desk(-1, titleTextEdit.text!, descriptionTextView.text!, profileID)) {
-            self.performSegue(withIdentifier: "NewDeskToDesks", sender: self)
-        }
-        else {
-            showError(controller: self, message: "Что-то пошло не так!")
-        }
-    }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "NewDeskToDesks" {
-            if let desksVC = segue.destination as? DesksViewController {
-                desksVC.profileID = profileID
+            if titleTextEdit.text!.isEmpty {
+                showError(controller: self, message: "Введите заголовок доски!")
+                return
+            }
+            if db.addNewDesk(Desk(-1, titleTextEdit.text!, descriptionTextView.text!, profileID)) {
+                if let navVC = segue.destination as? NavigationViewController {
+                    let desksVC = navVC.topViewController as? DesksViewController
+                    desksVC?.profileID = profileID
+                }
+            }
+            else {
+                showError(controller: self, message: "Что-то пошло не так!")
             }
         }
     }

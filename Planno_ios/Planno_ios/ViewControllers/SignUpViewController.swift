@@ -23,21 +23,12 @@ class SignUpViewController : UIViewController {
     @IBOutlet weak var cancelButton: UIButton!
     
     private let db = Database.shared
-    var status = "CREATE"
     var profileID: Int32 = -1
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if status == "CREATE" {
-            actionButton.setTitle("Sign up", for: .normal)
-            cancelButton.isHidden = true
-        }
-        else {
-            actionButton.setTitle("Confirm settings", for: .normal)
-            actionButton.setTitleColor(UIColor.red, for: .normal)
-            cancelButton.isHidden = false
-            cancelButton.setTitle("Delete account", for: .normal)
-        }
+        actionButton.setTitle("Sign up", for: .normal)
+        actionButton.setTitle("Confirm settings", for: .normal)
     }
     
     func checkInputData() -> Bool {
@@ -66,56 +57,29 @@ class SignUpViewController : UIViewController {
         return true
     }
     
-    @IBAction func actionButtonClicked(_ sender: Any) {
-        if checkInputData() {
-            let userID = db.findUser(email: emailTextField.text!, password: passwordTextField.text!)
-            if userID != -1 {
-                showError(controller: self, message: "Пользователь с такой почтой уже есть!")
-                return
-            }
-            if status == "CREATE" {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "SignUpToDesks" {
+            if checkInputData() {
+                let userID = db.findUser(email: emailTextField.text!, password: passwordTextField.text!)
+                if userID != -1 {
+                    showError(controller: self, message: "Пользователь с такой почтой уже есть!")
+                    return
+                }
                 var user = User(userID, nameTextField.text!, surnameTextField.text!, emailTextField.text!, passwordTextField.text!, dayTextField.text! + "." + monthTextField.text! + "." + yearTextField.text!)
                 if db.addNewUser(user) {
-                    self.performSegue(withIdentifier: "SignUpToDesks", sender: self)
+                    if let desksVC = segue.destination as? DesksViewController {
+                        desksVC.profileID = profileID
+                    }
                 }
                 else {
                     print("Что-то пошло не так! Не удалось добавить пользователя!")
                     return
                 }
             }
-            else {
-                var user = User(profileID, nameTextField.text!, surnameTextField.text!, emailTextField.text!, passwordTextField.text!, dayTextField.text! + "." + monthTextField.text! + "." + yearTextField.text!)
-                if db.updateUser(user) {
-                    self.performSegue(withIdentifier: "SignUpToDesks", sender: self)
-                }
-                else {
-                    print("Что-то пошло не так! Не удалось изменить пользователя!")
-                }
-            }
-        }
-    }
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "SignUpToDesks" {
-            if let desksVC = segue.destination as? DesksViewController {
-                desksVC.profileID = profileID
-            }
         }
         else if segue.identifier == "SignUpToLaunch" {
             if let _ = segue.destination as? LaunchViewController {
                 
-            }
-        }
-    }
-    
-    @IBAction func cancelButtonClicked(_ sender: Any) {
-        if status == "CREATE" {
-            self.performSegue(withIdentifier: "SignUpToDesks", sender: self)
-        } else {
-            if db.deleteUser(ID: profileID) {
-                self.performSegue(withIdentifier: "SignUpToLaunch", sender: self)
-            }
-            else {
-                showError(controller: self, message: "Что-то пошло не так! Не удалось удалить пользователя!")
             }
         }
     }

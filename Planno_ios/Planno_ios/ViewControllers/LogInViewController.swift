@@ -19,28 +19,19 @@ class LogInViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-
-    @IBAction func loginButtonClicked(_ sender: Any) {
-        //password = "\(SHA3.shared.getHash(passwordTextField.text!))"
-        password = passwordTextField.text!
-        if checkInputData() {
-            profileID = db.findUser(email: emailTextField.text!, password: password)
-            if profileID != -1 {
-                self.performSegue(withIdentifier: "LogInToDesks", sender: self)
-            }
-            else {
-                showError(controller : self, message: "Неправильный логин или пароль!");
-            }
-        }
-    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "LogInToDesks" && checkInputData() {
-            if let desksVC = segue.destination as? DesksViewController {
-                desksVC.profileID = profileID
-            }
-            else {
+            //password = "\(SHA3.shared.getHash(passwordTextField.text!))"
+            password = passwordTextField.text!
+            profileID = db.findUser(email: emailTextField.text!, password: password)
+            guard profileID > -1 else {
                 showError(controller : self, message: "Неправильный логин или пароль!");
+                return
+            }
+            if let navVC = segue.destination as? UINavigationController {
+                let desksVC = navVC.topViewController as! DesksViewController
+                desksVC.profileID = profileID
             }
             
         }

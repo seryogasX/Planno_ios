@@ -37,7 +37,7 @@ class Database {
         let createQuery = """
             CREATE TABLE IF NOT EXISTS ProfileInformation (ProfileID integer primary key, ProfileName varchar(50), ProfileSecondName varchar(50), ProfileYear varchar(10));
             CREATE TABLE IF NOT EXISTS ProfileAuthor (ProfileEmail varchar(50), ProfilePassword varchar(32), ProfileID integer, foreign key (ProfileID) references ProfileInformation(ProfileID));
-            CREATE TABLE IF NOT EXISTS Desks (DeskID integer primary key, DeskName varchar(50), DeskText varchar(255), ProfileID integer, foreign key(ProfileID), references ProfileInformation(ProfileID));
+            CREATE TABLE IF NOT EXISTS Desks (DeskID integer primary key, DeskName varchar(50), DeskText varchar(255), ProfileID integer, foreign key(ProfileID) references ProfileInformation(ProfileID));
             CREATE TABLE IF NOT EXISTS AccessTable (ProfileID integer, DeskID integer, IsOwner integer, foreign key (ProfileID) references ProfileInformation(ProfileID), foreign key(DeskID) references Desks(DeskID));
             CREATE TABLE IF NOT EXISTS MarkList (MarkID integer primary key, MarkDescription varchar(255));
             CREATE TABLE IF NOT EXISTS Cards (CardID integer primary key, DeskID integer, CardName varchar(50), CardDescription varchar(255), CardCreationDate varchar(10), CardDeadLineDate varchar(10), CardStatus integer, foreign key(DeskID) references Desks(DeskID));
@@ -75,7 +75,7 @@ class Database {
             }
             if sqlite3_step(statement) == SQLITE_ROW {
                 profileID = sqlite3_column_int(statement, 2)
-                print("Найшли пользователя! ID=\(profileID)")
+                print("Нашли пользователя! ID=\(profileID)")
             }
             else {
                 print("Пользователь не найден!")
@@ -97,7 +97,12 @@ class Database {
                 completeTransaction = false
                 
             }
-            user.id = sqlite3_column_int(statement, 0) + 1
+            if sqlite3_step(statement) == SQLITE_ROW {
+                user.id = sqlite3_column_int(statement, 0) + 1
+            }
+            else {
+                user.id = 1
+            }
             var addNewUserQuery = "INSERT INTO ProfileInformation(ProfileID, ProfileName, ProfileSecondName, ProfileYear) VALUES (?, ?, ?, ?);"
             if sqlite3_prepare_v2(db, addNewUserQuery, -1, &statement, nil) == SQLITE_OK {
                 sqlite3_bind_int(statement, 1, user.id)
@@ -164,24 +169,78 @@ class Database {
             print("Ошибка базы данных! Невозможно получить максимальный ID!")
             return false
         }
-        desk.id = sqlite3_column_int(statement, 0) + 1
-        let addNewDeskQuery = "INSERT INTO Desks(DeskID, DeskName, DeskText, ProfileID) VALUES(?, ?, ?, ?)"
-        if sqlite3_prepare_v2(db, addNewDeskQuery, -1, &statement, nil) == SQLITE_OK {
-            sqlite3_bind_int(statement, 1, desk.id)
-            sqlite3_bind_text(statement, 2, desk.name, -1, nil)
-            sqlite3_bind_text(statement, 3, desk.text, -1, nil)
-            sqlite3_bind_int(statement, 4, desk.profileID)
+        if sqlite3_step(statement) == SQLITE_ROW {
+            desk.id = sqlite3_column_int(statement, 0) + 1
+        }
+        else {
+            desk.id = 1
+        }
+        
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) == SQLITE_OK {
+            var addNewDeskQuery = "INSERT INTO Desks(DeskID, DeskName, DeskText, ProfileID) VALUES(?, ?, ?, ?)"
+            if sqlite3_prepare_v2(db, addNewDeskQuery, -1, &statement, nil) == SQLITE_OK {
+                sqlite3_bind_int(statement, 1, desk.id)
+                sqlite3_bind_text(statement, 2, desk.name, -1, nil)
+                sqlite3_bind_text(statement, 3, desk.text, -1, nil)
+                sqlite3_bind_int(statement, 4, desk.profileID)
+                
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Доска добавлена! ID=\(desk.id)")
+                }
+                else {
+                    print("Ошибка при добавлении доски!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка при добавлении доски!")
+                completeTransaction = false
+            }
             
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Доска добавлена! ID=\(desk.id)")
+            addNewDeskQuery = "INSERT INTO AccessTable(ProfileID, DeskID, IsOwner) VALUES(?, ?, ?)"
+            if sqlite3_prepare_v2(db, addNewDeskQuery, -1, &statement, nil) == SQLITE_OK {
+                sqlite3_bind_int(statement, 1, desk.profileID)
+                sqlite3_bind_int(statement, 2, desk.id)
+                sqlite3_bind_int(statement, 3, 1)
+                
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Доска добавлена! ID=\(desk.id)")
+                }
+                else {
+                    print("Ошибка при добавлении доски!")
+                    completeTransaction = false
+                }
+            }
+            else {
+                print("Ошибка при добавлении доски!")
+                completeTransaction = false
             }
         }
         else {
-            print("Ошибка при добавлении доски!")
-            return false
+            print("Не удалось добавить доску!")
+            completeTransaction = false
+        }
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Изменения внесены!")
+            }
+            else{
+                print("Изменения не внесены!")
+                completeTransaction = false
+            }
+        }
+        else{
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Откат транзакции!")
+            }
+            else {
+                print("Ошибка при откате транзакции!")
+                completeTransaction = false
+            }
         }
         sqlite3_finalize(statement)
-        return true
+        return completeTransaction
     }
     
     public func getDesksList(profileID : Int32) -> [Desk] {
@@ -190,13 +249,16 @@ class Database {
         guard profileID > 0 else {
             return list
         }
-        var getDesksQuery = "SELECT DeskID FROM AccessTable WHERE ProfileID=\(profileID)"
-        if sqlite3_prepare_v2(db, getDesksQuery, -1, &statement, nil) != SQLITE_OK {
-            print("Ошибка базы данных! Не удалось загрузить список доступа к досокам!")
+        var getDesksQuery = "SELECT * FROM AccessTable WHERE ProfileID=?"
+        if sqlite3_prepare_v2(db, getDesksQuery, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_int(statement, 1, profileID)
+        }
+        else {
+            print("Ошибка базы данных! Не удалось загрузить список доступа к доскам!")
             return list
         }
         while sqlite3_step(statement) == SQLITE_ROW {
-            let id = sqlite3_column_int(statement, 0)
+            let id = sqlite3_column_int(statement, 1)
             deskIDList.append(id)
         }
         
