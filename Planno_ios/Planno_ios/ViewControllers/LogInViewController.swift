@@ -22,8 +22,9 @@ class LogInViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "LogInToDesks" && checkInputData() {
-            //password = "\(SHA3.shared.getHash(passwordTextField.text!))"
             password = passwordTextField.text!
+            let data = SHA3.sha256(data: password.data(using: .utf8)!)
+            password = String(decoding: data, as: UTF8.self)
             profileID = db.findUser(email: emailTextField.text!, password: password)
             guard profileID > -1 else {
                 showError(controller : self, message: "Неправильный логин или пароль!");

@@ -58,14 +58,17 @@ class SignUpViewController : UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        var password = passwordTextField.text!
+        let data = SHA3.sha256(data: password.data(using: .utf8)!)
+        password = String(decoding: data, as: UTF8.self)
         if segue.identifier == "SignUpToDesks" {
             if checkInputData() {
-                let userID = db.findUser(email: emailTextField.text!, password: passwordTextField.text!)
+                let userID = db.findUser(email: emailTextField.text!, password: password)
                 if userID != -1 {
                     showError(controller: self, message: "Пользователь с такой почтой уже есть!")
                     return
                 }
-                var user = User(userID, nameTextField.text!, surnameTextField.text!, emailTextField.text!, passwordTextField.text!, dayTextField.text! + "." + monthTextField.text! + "." + yearTextField.text!)
+                let user = User(userID, nameTextField.text!, surnameTextField.text!, emailTextField.text!, password, dayTextField.text! + "-" + monthTextField.text! + "-" + yearTextField.text!)
                 if db.addNewUser(user) {
                     if let desksVC = segue.destination as? DesksViewController {
                         desksVC.profileID = profileID

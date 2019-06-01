@@ -51,7 +51,8 @@ class Mark {
 }
 
 class Card {
-    let id : Int32
+    var id : Int32
+    var deskID : Int32
     let name : String
     let description : String
     let creationDate : String
@@ -59,8 +60,9 @@ class Card {
     let cardStatus : Int32
     var marksList: [Mark]
     
-    init (_ id_: Int32, _ name_: String, _ description_: String, _ creationDate_: String, _ deadlineDate_: String?, _ cardStatus_: Int32) {
+    init (_ id_: Int32, _ deskID_: Int32, _ name_: String, _ description_: String, _ creationDate_: String, _ deadlineDate_: String?, _ cardStatus_: Int32) {
         id = id_
+        deskID = deskID_
         name = name_
         description = description_
         creationDate = creationDate_

@@ -36,7 +36,7 @@ class Database {
     private func initTables() -> Bool {
         let createQuery = """
             CREATE TABLE IF NOT EXISTS ProfileInformation (ProfileID integer primary key, ProfileName varchar(50), ProfileSecondName varchar(50), ProfileYear varchar(10));
-            CREATE TABLE IF NOT EXISTS ProfileAuthor (ProfileEmail varchar(50), ProfilePassword varchar(32), ProfileID integer, foreign key (ProfileID) references ProfileInformation(ProfileID));
+            CREATE TABLE IF NOT EXISTS ProfileAuthor (ProfileEmail varchar(50), ProfilePassword varchar(256), ProfileID integer, foreign key (ProfileID) references ProfileInformation(ProfileID));
             CREATE TABLE IF NOT EXISTS Desks (DeskID integer primary key, DeskName varchar(50), DeskText varchar(255), ProfileID integer, foreign key(ProfileID) references ProfileInformation(ProfileID));
             CREATE TABLE IF NOT EXISTS AccessTable (ProfileID integer, DeskID integer, IsOwner integer, foreign key (ProfileID) references ProfileInformation(ProfileID), foreign key(DeskID) references Desks(DeskID));
             CREATE TABLE IF NOT EXISTS MarkList (MarkID integer primary key, MarkDescription varchar(255));
@@ -84,6 +84,7 @@ class Database {
         else {
             print("Ошибка базы данных!")
         }
+        
         sqlite3_finalize(statement)
         return profileID
     }
@@ -279,26 +280,25 @@ class Database {
         return list
     }
     
-    public func getCardsList(deskid: Int32) -> [Card] {
+    public func getCardsList(deskID: Int32) -> [Card] {
         var list: [Card] = []
-        guard deskid > 0 else {
+        guard deskID > 0 else {
             return list
         }
-        let getDesksQuery = "SELECT * FROM Cards WHERE DeskID=\(deskid)"
+        let getDesksQuery = "SELECT * FROM Cards WHERE DeskID=\(deskID)"
         if sqlite3_prepare_v2(db, getDesksQuery, -1, &statement, nil) != SQLITE_OK {
             print("Ошибка базы данных! Не удалось загрузить список досок!")
             return list
         }
         while sqlite3_step(statement) == SQLITE_ROW {
             let id = sqlite3_column_int(statement, 0)
-            let name = sqlite3_column_text(statement, 1)
-            let description = sqlite3_column_text(statement, 2)
-            let creationDate = sqlite3_column_text(statement, 3)
-            let deadlineDate = sqlite3_column_text(statement, 4)
-            let cardStatus = sqlite3_column_int(statement, 5)
-            list.append(Card(id, String(cString: name!), String(cString: description!),
-                             String(cString: creationDate!), String(cString: deadlineDate!),
-                             cardStatus))
+            let deskID = sqlite3_column_int(statement, 1)
+            let name = String(cString: sqlite3_column_text(statement, 2)!)
+            let description = String(cString: sqlite3_column_text(statement, 3)!)
+            let creationDate = String(cString: sqlite3_column_text(statement, 4)!)
+            let deadlineDate = String(cString: sqlite3_column_text(statement, 5)!)
+            let cardStatus = sqlite3_column_int(statement, 6)
+            list.append(Card(id, deskID, name, description, creationDate, deadlineDate, cardStatus))
         }
         sqlite3_finalize(statement)
         return list
@@ -438,141 +438,442 @@ class Database {
                 print("Ошибка базы данных! Не удалось удалить карту!")
                 completeTransaction = false
             }
-            
-            if completeTransaction {
-                if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
-                    print("Карта удалена!")
-                }
-                else {
-                    print("Карта не удалена! Ошибка в COMMIT!")
-                    completeTransaction = false
-                }
-            }
-            else {
-                if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
-                    print("Карта не удалена! Откат транзакции!")
-                }
-                else {
-                    print("Карта не удалена! Ошибка в ROLLBACK!")
-                    completeTransaction = false
-                }
-            }
         }
         else {
             print("Ошибка базы данных! Не удалось начать транзакцию!")
             completeTransaction = false
         }
         
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Карта удалена!")
+            }
+            else {
+                print("Карта не удалена! Ошибка в COMMIT!")
+                completeTransaction = false
+            }
+        }
+        else {
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Карта не удалена! Откат транзакции!")
+            }
+            else {
+                print("Карта не удалена! Ошибка в ROLLBACK!")
+                completeTransaction = false
+            }
+        }
         return completeTransaction
     }
     
-    public func updateDesk(deskID: Int32, name: String?, description: String?) -> Bool {
-        var updateDeskQuery = "UPDATE Desks SET"
-        if let _ = name, let _ = description{
-            updateDeskQuery += " DeskName=?, DeskText=? "
-        }
-        else if let _ = name {
-            updateDeskQuery += " DeskName=? "
-        }
-        else if let _ = description {
-            updateDeskQuery += " DeskText=? "
-        }
-        else {
-            return false
-        }
-        updateDeskQuery += "WHERE DeskID=?"
+    public func updateDesk(deskID: Int32, name: String?, description: String?, guestEmail: String?) -> Bool {
         
-        if sqlite3_prepare_v2(db, updateDeskQuery, -1, &statement, nil) == SQLITE_OK {
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION", nil, nil, nil) == SQLITE_OK {
+            var updateDeskQuery = "UPDATE Desks SET"
             if let _ = name, let _ = description{
-                sqlite3_bind_text(statement, 1, name, -1, nil)
-                sqlite3_bind_text(statement, 2, description, -1, nil)
-                sqlite3_bind_int(statement, 3, deskID)
+                updateDeskQuery += " DeskName=?, DeskText=? "
             }
             else if let _ = name {
-                sqlite3_bind_text(statement, 1, name, -1, nil)
-                sqlite3_bind_int(statement, 2, deskID)
+                updateDeskQuery += " DeskName=? "
             }
             else if let _ = description {
-                sqlite3_bind_text(statement, 1, description, -1, nil)
-                sqlite3_bind_int(statement, 2, deskID)
+                updateDeskQuery += " DeskText=? "
             }
-            
-            if sqlite3_step(statement) == SQLITE_DONE {
-                print("Доска обновлена!")
+            else {
+                return false
+            }
+            updateDeskQuery += "WHERE DeskID=?"
+        
+            if sqlite3_prepare_v2(db, updateDeskQuery, -1, &statement, nil) == SQLITE_OK {
+                if let _ = name, let _ = description{
+                    sqlite3_bind_text(statement, 1, name, -1, nil)
+                    sqlite3_bind_text(statement, 2, description, -1, nil)
+                    sqlite3_bind_int(statement, 3, deskID)
+                }
+                else if let _ = name {
+                    sqlite3_bind_text(statement, 1, name, -1, nil)
+                    sqlite3_bind_int(statement, 2, deskID)
+                }
+                else if let _ = description {
+                    sqlite3_bind_text(statement, 1, description, -1, nil)
+                    sqlite3_bind_int(statement, 2, deskID)
+                }
+                
+                if sqlite3_step(statement) == SQLITE_DONE {
+                    print("Доска обновлена!")
+                }
+                else {
+                    print("Ошибка обновления доски!")
+                    completeTransaction = false
+                }
             }
             else {
                 print("Ошибка обновления доски!")
-                return false
+                completeTransaction = false
+            }
+            
+            if let _ = guestEmail {
+                var guestID: Int32 = -1
+                let getGuestIDQuery = "SELECT ProfileID FROM ProfileAuthor WHERE ProfileEmail=?"
+                if sqlite3_prepare_v2(db, getGuestIDQuery, -1, &statement, nil) == SQLITE_OK {
+                    sqlite3_bind_text(db, 1, guestEmail, -1, nil)
+                    
+                    if sqlite3_step(statement) == SQLITE_ROW {
+                        guestID = sqlite3_column_int(statement, 0)
+                    }
+                }
+                
+                if guestID == -1 {
+                    print("Нет такого пользователя!")
+                    completeTransaction = false
+                }
+                else {
+                    if !addNewUserToDesk(deskID, guestID, 0) {
+                        print("Пользователь не добавлен!")
+                        completeTransaction = false
+                    }
+                    else {
+                        print("Пользователь добавлен!")
+                    }
+                }
             }
         }
         else {
-            print("Ошибка обновления доски!")
-            return false
+            completeTransaction = false
         }
-        return true
+        
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Доска обновлена!")
+            }
+            else {
+                print("Доска не обновлена! Ошибка в COMMIT!")
+                completeTransaction = false
+            }
+        }
+        else {
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Доска не обновлена! Откат транзакции!")
+            }
+            else {
+                print("Доска не обновлена! Ошибка в ROLLBACK!")
+                completeTransaction = false
+            }
+        }
+        return completeTransaction
     }
     
     
     public func updateCard(cardID: Int32, name: String?, description: String?, deadLineDate: String?, cardStatus: Int32?) -> Bool {
-//        var updateCardQuery = "UPDATE Cards SET"
-//        if let _ = name, let _ = description, let _ = deadLineDate, let _ = cardStatus{
-//            updateCardQuery += " CardName=?, CardDescription=?, CardDeadLineDate=?, cardStatus=? "
-//        }
-//        else if let _ = name {
-//            updateCardQuery += " CardName=? "
-//        }
-//        else if let _ = description {
-//            updateCardQuery += " DeskName=? "
-//        }
-//        else {
-//            return false
-//        }
-//        updateCardQuery += "WHERE CardID=?"
-//
-//        if sqlite3_prepare_v2(db, updateCardQuery, -1, &statement, nil) == SQLITE_OK {
-//            if let _ = name, let _ = description{
-//                sqlite3_bind_text(statement, 1, name, -1, nil)
-//                sqlite3_bind_text(statement, 2, description, -1, nil)
-//                sqlite3_bind_int(statement, 3, deskID)
-//            }
-//            else if let _ = name {
-//                sqlite3_bind_text(statement, 1, description, -1, nil)
-//                sqlite3_bind_int(statement, 2, deskID)
-//            }
-//            else if let _ = description {
-//                sqlite3_bind_text(statement, 1, name, -1, nil)
-//                sqlite3_bind_int(statement, 2, deskID)
-//            }
-//
-//            if sqlite3_step(statement) == SQLITE_DONE {
-//                print("Доска обновлена!")
-//            }
-//            else {
-//                print("Ошибка обновления доски!")
-//                return false
-//            }
-//        }
-//        else {
-//            print("Ошибка обновления доски!")
-//            return false
-//        }
-        return true
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN", nil, nil, nil) == SQLITE_OK {
+            
+            if let _ = name {
+                if sqlite3_prepare_v2(db, "UPDATE Cards SET CardName=? WHERE CardID=?", -1, &statement, nil) == SQLITE_OK {
+                    sqlite3_bind_text(statement, 1, name!, -1, nil)
+                    sqlite3_bind_int(statement, 2, cardID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+            
+            if let _ = description {
+                if sqlite3_prepare_v2(db, "UPDATE Cards SET CardDescription=? WHERE CardID=?", -1, &statement, nil) == SQLITE_OK {
+                    sqlite3_bind_text(statement, 1, description!, -1, nil)
+                    sqlite3_bind_int(statement, 2, cardID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+            
+            if let _ = deadLineDate {
+                if sqlite3_prepare_v2(db, "UPDATE Cards SET CardDeadlineDate=? WHERE CardID=?", -1, &statement, nil) == SQLITE_OK {
+                    sqlite3_bind_text(statement, 1, deadLineDate!, -1, nil)
+                    sqlite3_bind_int(statement, 2, cardID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+            
+            if let _ = cardStatus {
+                if sqlite3_prepare_v2(db, "UPDATE Cards SET CardStatus=? WHERE CardID=?", -1, &statement, nil) == SQLITE_OK {
+                    sqlite3_bind_int(statement, 1, cardStatus!)
+                    sqlite3_bind_int(statement, 2, cardID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+            
+        }
+        else {
+            completeTransaction = false
+        }
+        
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Карта обновлена!")
+            }
+            else {
+                print("Карта не обновлена! Ошибка в COMMIT!")
+                completeTransaction = false
+            }
+        }
+        else {
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Карта не обновлена! Откат транзакции!")
+            }
+            else {
+                print("Карта не обновлена! Ошибка в ROLLBACK!")
+                completeTransaction = false
+            }
+        }
+        return completeTransaction
     }
     
-    public func addNewUserToDesk(_ deskID: Int32, _ newUserID: Int32, _ isOwner: Bool) -> Bool {
-        let addNewUserToDesk = "INSERT INTO AccessTable(ProfileID, DeskID, isOwner) VALUES(\(newUserID), \(deskID), \(isOwner))"
-        if sqlite3_exec(db, addNewUserToDesk, nil, nil, nil) != SQLITE_OK {
-            print("Ошибка базы данных! Невозможно добавить нового пользователя к доске!")
-            return false
+    public func addNewUserToDesk(_ deskID: Int32, _ newUserID: Int32, _ isOwner: Int32) -> Bool {
+        let addNewUserToDeskQuery = "INSERT INTO AccessTable(ProfileID, DeskID, IsOwner) VALUES (?, ?, ?)"
+        if sqlite3_prepare_v2(db, addNewUserToDeskQuery, -1, &statement, nil) == SQLITE_OK {
+            sqlite3_bind_int(statement, 1, newUserID)
+            sqlite3_bind_int(statement, 2, deskID)
+            sqlite3_bind_int(statement, 3, isOwner)
+            if sqlite3_step(statement) != SQLITE_OK {
+                print("Ошибка базы данных! Невозможно добавить нового пользователя к доске!")
+                return false
+            }
         }
         return true
     }
     
-    public func updateUser(email: String?, name: String?, surname: String?, password: String?) -> Bool {
-        return true
+    public func updateUser(profileID: Int32, email: String?, name: String?, surname: String?, password: String?) -> Bool {
+        var completeTransaction = true
+        
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) == SQLITE_OK{
+            if let _ = email {
+                if findUser(email: email!, password: nil) == -1{
+                    completeTransaction = false
+                }
+                else {
+                    let query = "UPDATE ProfileAuthor SET ProfileEmail=? WHERE ProfileID=?"
+                    if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK{
+                        sqlite3_bind_text(statement, 1, email, -1, nil)
+                        sqlite3_bind_int(statement, 2, profileID)
+                        if sqlite3_step(statement) != SQLITE_DONE {
+                            completeTransaction = false
+                        }
+                    }
+                    else {
+                        completeTransaction = false
+                    }
+                }
+            }
+            
+            if let _ = password {
+                let query = "UPDATE ProfileAuthor SET ProfilePassword=? WHERE ProfileID=?"
+                if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK{
+                    sqlite3_bind_text(statement, 1, password, -1, nil)
+                    sqlite3_bind_int(statement, 2, profileID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+            
+            if let _ = name {
+                let query = "UPDATE ProfileInformation SET ProfileName=? WHERE ProfileID=?"
+                if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK{
+                    sqlite3_bind_text(statement, 1, name, -1, nil)
+                    sqlite3_bind_int(statement, 2, profileID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+            
+            if let _ = surname {
+                let query = "UPDATE ProfileInformation SET ProfileSecondName=? WHERE ProfileID=?"
+                if sqlite3_prepare_v2(db, query, -1, &statement, nil) == SQLITE_OK{
+                    sqlite3_bind_text(statement, 1, surname, -1, nil)
+                    sqlite3_bind_int(statement, 2, profileID)
+                    if sqlite3_step(statement) != SQLITE_DONE {
+                        completeTransaction = false
+                    }
+                }
+                else {
+                    completeTransaction = false
+                }
+            }
+        }
+        else {
+            completeTransaction = false
+        }
+        
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Пользователь не обновлен!")
+            }
+            else {
+                print("Пользователь не обновлен! Ошибка в COMMIT!")
+                completeTransaction = false
+            }
+        }
+        else {
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Пользователь не обновлен! Откат транзакции!")
+            }
+            else {
+                print("Пользователь не обновлен! Ошибка в ROLLBACK!")
+                completeTransaction = false
+            }
+        }
+        return completeTransaction
     }
     
     public func deleteUser(ID: Int32) -> Bool {
-        return true
+        let deskList = getDesksList(profileID: ID)
+        var cardList: [Card] = []
+        for i in deskList {
+            let cardListByDeskID = getCardsList(deskID: i.id)
+            for j in cardListByDeskID {
+                cardList.append(j)
+            }
+        }
+        
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) != SQLITE_OK {
+            for i in cardList{
+                if !deleteCard(i.id) {
+                    completeTransaction = false
+                    break
+                }
+            }
+            
+            for i in deskList {
+                if !deleteDesk(i.id) {
+                    completeTransaction = false
+                    break
+                }
+            }
+            
+            if sqlite3_prepare_v2(db, "DELETE from ProfileAuthor WHERE ProfileID=?", -1, &statement, nil) != SQLITE_OK {
+                sqlite3_bind_int(statement, 1, ID)
+                if sqlite3_step(statement) != SQLITE_DONE {
+                    completeTransaction = false
+                }
+            }
+            
+            if sqlite3_prepare_v2(db, "DELETE from ProfileInformation WHERE ProfileID=?", -1, &statement, nil) != SQLITE_OK {
+                sqlite3_bind_int(statement, 1, ID)
+                if sqlite3_step(statement) != SQLITE_DONE {
+                    completeTransaction = false
+                }
+            }
+        }
+        else {
+            completeTransaction = true
+        }
+        
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Пользователь удален!")
+            }
+            else {
+                print("Пользователь не удален! Ошибка в COMMIT!")
+                completeTransaction = false
+            }
+        }
+        else {
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Пользователь не удален! Откат транзакции!")
+            }
+            else {
+                print("Пользователь не удален! Ошибка в ROLLBACK!")
+                completeTransaction = false
+            }
+        }
+        return completeTransaction
+    }
+    
+    public func addNewCard(_ card: Card) -> Bool {
+        var completeTransaction = true
+        if sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil) == SQLITE_OK {
+            let newCardIDQuery = "SELECT MAX(CardID) FROM Cards"
+            if sqlite3_prepare_v2(db, newCardIDQuery, -1, &statement, nil) != SQLITE_OK {
+                print("Ошибка базы данных! Невозможно получить максимальный ID!")
+                completeTransaction = false
+            }
+            if sqlite3_step(statement) == SQLITE_ROW {
+                card.id = sqlite3_column_int(statement, 0) + 1
+            }
+            else {
+                card.id = 1
+            }
+            
+            let newCardQuery = "INSERT INTO Cards (CardID, DeskID, CardName, CardDescription, CardCreationDate, CardDeadLineDate, CardStatus) VALUES(?, ?, ?, ?, ?, ?, ?)"
+            if sqlite3_prepare_v2(db, newCardQuery, -1, &statement, nil) == SQLITE_OK {
+                let id = card.id
+                let deskID = card.deskID
+                let name = card.name
+                let desc = card.description
+                let crDate = card.creationDate
+                let dDate = card.deadLineDate
+                let status = card.cardStatus
+                sqlite3_bind_int(statement, 1, id)
+                sqlite3_bind_int(statement, 2, deskID)
+                sqlite3_bind_text(statement, 3, name, -1, nil)
+                sqlite3_bind_text(statement, 4, desc, -1, nil)
+                sqlite3_bind_text(statement, 5, crDate, -1, nil)
+                sqlite3_bind_text(statement, 6, dDate!, -1, nil)
+                sqlite3_bind_int(statement, 7, status)
+                
+                if sqlite3_step(statement) != SQLITE_DONE {
+                    completeTransaction = false
+                }
+            }
+            else {
+                completeTransaction = false
+            }
+        }
+        
+        if completeTransaction {
+            if sqlite3_exec(db, "COMMIT;", nil, nil, nil) == SQLITE_OK {
+                print("Карта добавлена!")
+            }
+            else {
+                print("Карта не добавлена! Ошибка в COMMIT!")
+                completeTransaction = false
+            }
+        }
+        else {
+            if sqlite3_exec(db, "ROLLBACK;", nil, nil, nil) == SQLITE_OK {
+                print("Карта не добавлена! Откат транзакции!")
+            }
+            else {
+                print("Карта не добавлена! Ошибка в ROLLBACK!")
+                completeTransaction = false
+            }
+        }
+        return completeTransaction
     }
 }

@@ -14,11 +14,17 @@ class CardsViewController : UIViewController, UITableViewDelegate, UITableViewDa
     var db = Database.shared
     var deskID : Int32 = -1
     var cardList: [Card] = []
-    var selectedIndex = -1
+//    var selectedIndex = -1
+    @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        cardList = db.getCardsList(deskid: deskID)
+        cardList = db.getCardsList(deskID: deskID)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        cardList = db.getCardsList(deskID: deskID)
+        tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -26,18 +32,19 @@ class CardsViewController : UIViewController, UITableViewDelegate, UITableViewDa
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("BLET!!!")
         let cell = tableView.dequeueReusableCell(withIdentifier: "CardIdentifier", for: indexPath)
         cell.textLabel?.text = cardList[indexPath.row].name
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath.row
+        //selectedIndex = indexPath.row
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        selectedIndex = -1
+        //selectedIndex = -1
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -53,7 +60,8 @@ class CardsViewController : UIViewController, UITableViewDelegate, UITableViewDa
         }
         else if segue.identifier == "CardsToCardSettings" {
             if let cardSettingsVC = segue.destination as? CardSettingsViewController {
-                cardSettingsVC.cardID = cardList[selectedIndex].id
+                let selectedIndex = self.tableView.indexPath(for: sender as! UITableViewCell)?.row
+                cardSettingsVC.cardID = cardList[selectedIndex!].id
             }
         }
     }

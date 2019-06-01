@@ -32,7 +32,7 @@ class AccountSettingsViewController: UIViewController {
         let name = nameTextEdit.text!
         let surname = surnameTextEdit.text!
         let password = newPasswordTextEdit.text!
-        if db.updateUser(email: email, name: name, surname: surname, password: password) {
+        if db.updateUser(profileID: profileID, email: email, name: name, surname: surname, password: password) {
             
             showMessage(controller: self, message: "Данные аккаунта изменены!")
         }

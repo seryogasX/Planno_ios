@@ -12,7 +12,20 @@ import UIKit
 class DeskSettingsViewController: UIViewController {
     
     var deskID: Int32 = -1
+    var db = Database.shared
     
+    @IBOutlet weak var nameTextEdit: UITextField!
+    @IBOutlet weak var descriptionTextEdit: UITextField!
+    @IBOutlet weak var guestEmailTextEdit: UITextField!
+    
+    @IBAction func confirmButtonClicked(_ sender: Any) {
+        if db.updateDesk(deskID: deskID, name: nameTextEdit.text, description: descriptionTextEdit.text, guestEmail: guestEmailTextEdit.text) {
+                showMessage(controller: self, message: "Доска обновлена!")
+        }
+        else {
+            showError(controller: self, message: "Доска не обновлена!")
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
     }

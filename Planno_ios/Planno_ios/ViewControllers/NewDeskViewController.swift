@@ -29,10 +29,7 @@ class NewDeskViewController : UIViewController {
                 return
             }
             if db.addNewDesk(Desk(-1, titleTextEdit.text!, descriptionTextView.text!, profileID)) {
-                if let navVC = segue.destination as? NavigationViewController {
-                    let desksVC = navVC.topViewController as? DesksViewController
-                    desksVC?.profileID = profileID
-                }
+                _ = navigationController?.popViewController(animated: true)
             }
             else {
                 showError(controller: self, message: "Что-то пошло не так!")

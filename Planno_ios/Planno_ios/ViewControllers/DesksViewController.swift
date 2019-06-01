@@ -23,11 +23,17 @@ class DesksViewController : UIViewController, UITableViewDelegate, UITableViewDa
         desksList = db.getDesksList(profileID: profileID)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        desksList = db.getDesksList(profileID: profileID)
+        tableView.reloadData()
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return desksList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        print("BLET!")
         let cell = tableView.dequeueReusableCell(withIdentifier: "DeskIdentifier", for: indexPath)
         cell.textLabel?.text = desksList[indexPath.row].name
         return cell

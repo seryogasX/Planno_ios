@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CommonCrypto
 
 
 public final class SHA3 {
@@ -89,5 +90,13 @@ public final class SHA3 {
     public func getHash(_ str: String) -> UInt64 {
         var hash: UInt64 = 0
         return hash
+    }
+    
+    public static func sha256(data : Data) -> Data {
+        var hash = [UInt8](repeating: 0,  count: Int(CC_SHA256_DIGEST_LENGTH))
+        data.withUnsafeBytes {
+            _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &hash)
+        }
+        return Data(hash)
     }
 }
